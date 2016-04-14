@@ -31,78 +31,39 @@
 %     Isilon: 12.06, 15-19.06, 22-24.06, 26.06, 29.06 - 03.07, 06-10.07,
 %     12.07, 15-17.07, 21.07, 24.07, 30.07, 04-06.08, 09.08
 
-%% For each mouse, load up all available sessions of kappa/theta and see if it's obvious what the strategy is
+%% For each mouse, load up one session (especially good one) of kappa/theta and see if it's obvious what the strategy is
 clear behav_32 behav_33 behav_34 behav_36 behav_38
+% 32: 20-23.04. 0.83|0.84|0.89|0.84 correct (170,180,144,173 trials)
 
-% TO DO: Store file name, trial type and choice in same loop.
-
-% TO DO: List other single whisker sessions.
-
-
-% 32: 
-
-dates =  [3,7,29,32,35,38,41,45,47,49,50,56]; % {'200415_32a','210415_32a','220415_32a','230415_32a'};
-% To track: 18,57
-% On trials: 55,59,61,62
-% Bad session: 9
-% Missing data: 32 (one trial).
+dates = {'200415_32a','210415_32a','220415_32a','230415_32a'};
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     cd /run/user/1000/gvfs/smb-share:server=130.88.94.172',share=test'/Dario/Behavioral_movies/32/
-    files = dir;
-    cd(files(dates(i)).name);
-    files(dates(i)).name
+    cd(dates{i});
     x = cellstr(ls);
     cd (x{:})
     
     var_files = dir('*_clean.mat');
     kappa = zeros(numel(var_files),5000);
     theta = zeros(numel(var_files),5000);
-    
-    % Load good_trials file
-    xlsfile = 'good_trials.xlsx';
-    xls_info = xlsread(xlsfile);
-    
-    clear trialtypes choices 
     for j = 1: numel(var_files)
-        trial = str2double(var_files(j).name(end-15:end-10));
-        trial_num = find(xls_info(:,1) == trial);
-        trialtypes(j) = xls_info(trial_num,204);
-        choices(j) = xls_info(trial_num,205);
-        startframes(j) = xls_info(trial_num,3);
-        
-        % IF file isn't in good_trials, don't bother loading it
-        
         load(var_files(j).name,'kappa_w','theta_w');
-        kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
-        theta_w = [circshift(theta_w,[0,-startframe(j)]),zeros(1,5000-numel(theta_w))];
+        kappa_w = [kappa_w,zeros(1,5000-numel(kappa_w))];
+        theta_w = [theta_w,zeros(1,5000-numel(theta_w))];
         kappa(j,:) = kappa_w;
         theta(j,:) = theta_w;
-        
     end
     
     behav_32{i}.kappa = kappa;
     behav_32{i}.theta = theta;
-    
-    behav_32{i}.startframe = startframes;
-    behav_32{i}.trial = trials;
-    behav_32{i}.choice = choices;
-    behav_32{i}.trialtype = trialtypes;
 end
 
-% 33: 
-
-dates = [4,5,6,8,11,19,23,26,30,33,17,20,21,24,34,55,]; %{'110315_33a','120315_33a'}; % '120315_33b'/'130315_33a'/'160315_33a'/'160315_33b'/ 3 trials of '160315_33a' need tracking
-% To track: 16,12,22,25,27,28,29,31,37,51,52,53,54,58,61,66
-% On trials:
-% Bad sessions: 
-% Missing data:
+% 33: 11-13,16.03. 0.91|0.84|0.87|0.86 correct (285,50,283,50 trials)
+dates = {'110315_33a','120315_33a'}; % '120315_33b'/'130315_33a'/'160315_33a'/'160315_33b'/ 3 trials of '160315_33a' need tracking
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     cd /run/user/1000/gvfs/smb-share:server=130.88.94.172',share=test'/Dario/Behavioral_movies/33/
-    files = dir;
-    cd(files(dates(i)).name);
-    files(dates(i)).name
+    cd(dates{i});
     x = cellstr(ls);
     cd (x{:})
     
@@ -121,19 +82,12 @@ for i = 1:numel(dates);
     behav_33{i}.theta = theta;
 end
 
-% 34: 
-dates = [30,34]; % {'161214_34a','171214_34a'};
-% To track:
-% 21,23,24,27,4,15,18,25,28,31,35,40,54,56,58,5,8,9,11,12,16,19,22,26,29,36,32,43,46,49,51,52,60
-% On trials:
-% Bad sessions: 
-% Missing data:
+% 34: 16,17.12.14. 0.84|0.85 correct (223,241 trials). '161214_34a' one trial missing- ONLY 2 SESSIONS TRACKED
+dates = {'161214_34a','171214_34a'};
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     cd /run/user/1000/gvfs/smb-share:server=130.88.94.172',share=test'/Dario/Behavioral_movies/34/
-    files = dir;
-    cd(files(dates(i)).name);
-    files(dates(i)).name
+    cd(dates{i});
     x = cellstr(ls);
     cd (x{:})
     
@@ -151,21 +105,13 @@ for i = 1:numel(dates);
     behav_34{i}.kappa = kappa;
     behav_34{i}.theta = theta;
 end
+% 36: 06,07.08. 0.75|0.80 correct (424,97 trials) - DATA MISSING FROM TRAINED MICE SPREADSHEET (09.08)
+dates = {'060815_36a','070815_36a','070815_36b','080815_36a','090815_36a'};
 
-
-
-%% 36: 
-dates = []; %{'060815_36a','070815_36a','070815_36b','080815_36a','090815_36a'};
-% To track:
-% On trials:
-% Bad sessions: 
-% Missing data:
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
-    files = dir;
-    cd(files(dates(i)).name);
-    files(dates(i)).name
+    cd(dates{i});
     x = cellstr(ls);
     cd (x{:})
     
@@ -183,16 +129,13 @@ for i = 1:numel(dates);
     behav_36{i}.kappa = kappa;
     behav_36{i}.theta = theta;
 end
-
 % 38: 16,21,24,30.07. 0.85|0.74|0.83|0.76 (192,168,211,195 trials)
 dates = {'160715_38a','210715_38a','240715_38a','240715_38b','300715_38a'};
 % NO GOOD TRIALS FILE FOR 38
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/38/
-    files = dir;
-    cd(files(dates(i)).name);
-    files(dates(i)).name
+    cd(dates{i});
     x = cellstr(ls);
     cd (x{:})
     
@@ -210,8 +153,6 @@ for i = 1:numel(dates);
     behav_38{i}.kappa = kappa;
     behav_38{i}.theta = theta;
 end
-
-% NOTE: More data is ready for tracking on Isilon for 32,33 and 34
 
 %% Save a local copy
 save ('~/work/whiskfree/data/all_mice_example.mat','behav_32','behav_33','behav_34','behav_36','behav_38')
