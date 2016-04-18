@@ -307,8 +307,33 @@ colormap redblue
 figure(3); suptitle('Theta')
 figure(4); suptitle('Kappa')
 
-%% Theta/Kappa for left/right/no go separately
+%% Theta/Kappa for left/right/no go TOGETHER - correct trials
 figure(5); clf;
+colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.1];
+% Plot approx pole positions as shaded boxes
+
+% 60-70, 80-90, 100-110 degrees
+% fill([60,60,70,70],[-6e-3,6e-3,6e-3,-6e-3],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
+% hold all
+% fill([80,80,90,90],[-6e-3,6e-3,6e-3,-6e-3],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+% fill([100,100,110,110],[-6e-3,6e-3,6e-3,-6e-3],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+
+
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+
+        ct = find(behav_32{1}.choice(tt) == i);
+%         ax(i*3 - 3 + j) = subplot(3,3,i*3 - 3 + j); 
+        t = behav_32{1}.theta(tt(ct),:)';
+        k = behav_32{1}.kappa(tt(ct),:)';
+%         h = plot(conv(t(:),gausswin(10,1),'same')./10,conv(k(:),gausswin(10,1),'same')./10,'.','color',colours(i,:),'markersize',1); hold all;
+          h = plot(conv(t(find(t)),gausswin(10,1),'same')./10,conv(k(find(t)),gausswin(10,1),'same')./10,'color',colours(i,:),'markersize',1); hold all;
+end
+
+legend('Posterior pole','Anterior pole','No Go')
+
+%% Theta/Kappa for left/right/no go SEPARATELY - all trials
+figure(6); clf;
 for i = 1:3;
     tt = find(behav_32{1}.trialtype == i);
     for j = 1:3;
@@ -326,19 +351,143 @@ end
 linkaxes(ax);
 
 %% Kappa for L/R/NG
-figure(6);clf
+figure(7);clf
+colours = [1,0,0;0,1,0;0,0,0];
+
 for i = 1:3;
     tt = find(behav_32{1}.trialtype == i);
     ct = find(behav_32{1}.choice(tt) == i);
     
-    plot(mean(abs(behav_32{1}.kappa(tt(ct),:))));
+    %     plot(mean(abs(behav_32{1}.kappa(tt(ct),:))));
+    data = bsxfun(@minus,(conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(behav_32{1}.kappa(tt(ct),1:100),2))';
+    m = mean(data');
+    sem = std(data'./sqrt(numel(ct)));
+    myeb(1:numel(m),m,sem,[colours(i,:),0]);
     hold all
 end
 
-legend('Posterior pole','Anterior pole','No Go')
-title('Mean abs kappa, correct choice');
+legend('Posterior pole','','Anterior pole','','No Go','')
+title('Mean kappa, correct choice');
+
+%% Raw kapp for L/R/NG
+figure(7);clf
+
+colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+% colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
+% Plot approx pole positions as shaded boxes
+% 60-70, 80-90, 100-110 degrees
+titles = {'Posterior pole';'Anterior pole';'No Go'};
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    subplot(1,3,i)
+    
+    %     plot((conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid'))./50 - mean(behav_32{1}.kappa(tt(ct),1:100),2),'color',colours(i,:));
+    %     plot(behav_32{1}.kappa(tt(ct),:)','color',colours(i,:));
+    plot(bsxfun(@minus,(conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(behav_32{1}.kappa(tt(ct),1:100),2))','color',colours(i,:))
+    title(titles{i})
+%     ylim([-6e-3,6e-3])
+    ylim([-1e-3,2e-3])
+    xlim([0,2500])
+end
 
 
+% legend('Posterior pole','','Anterior pole','','No Go','')
+suptitle('Whisker curvature, correct choice');
+%% Mean theta for L/R/NG
+figure(8);clf
+colours = [1,0,0;0,1,0;0,0,0];
+
+% Plot approx pole positions as shaded boxes
+% 60-70, 80-90, 100-110 degrees
+fill([1,5000,5000,1],[60,60,70,70],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
+hold all
+fill([1,5000,5000,1],[80,80,90,90],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+fill([1,5000,5000,1],[100,100,110,110],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+
+
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    
+    %     plot(mean(abs(behav_32{1}.kappa(tt(ct),:))));
+    m = mean((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50);
+    sem = std((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50)./sqrt(numel(ct));
+    myeb(1:numel(m),m,sem,[colours(i,:),0]);
+    hold all
+end
+
+
+% legend('Posterior pole','','Anterior pole','','No Go','')
+title('Mean abs theta, correct choice');
+
+
+
+%% Raw theta for L/R/NG
+figure(9);clf
+% colours = [1,0,0,0.25;0,1,0,0.25;0,0,0,0.25];
+colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+% Plot approx pole positions as shaded boxes
+% 60-70, 80-90, 100-110 degrees
+titles = {'Posterior pole';'Anterior pole';'No Go'};
+
+
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    subplot(1,3,i)
+    fill([1,5000,5000,1],[60,60,70,70],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
+    hold all
+    fill([1,5000,5000,1],[80,80,90,90],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+    fill([1,5000,5000,1],[100,100,110,110],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+    
+    plot((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid'))./50,'color',colours(i,:));
+
+%     plot(behav_32{1}.theta(tt(ct),:)','color',colours(i,:));
+    
+    title(titles{i})
+    ylim([40,140])
+    xlim([0,2500])
+end
+
+
+% legend('Posterior pole','','Anterior pole','','No Go','')
+suptitle('Whisker angle, correct choice');
+
+%% Image plot of whisker position in the 3 trial types
+figure(11);
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    t = behav_32{1}.theta(tt(ct),:)';
+    k = behav_32{1}.kappa(tt(ct),:)';
+    
+    subplot(1,3,i)
+    [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
+    surf(hdata,'edgecolor','none')
+%     set(gca,'xticklabels',haxes{2})
+%     set(gca,'yticklabels',haxes{1})
+    view([-90 90])
+end
+
+%% Countour plots of whisker position in the 3 trial types
+figure(11);
+clf;
+colours = [0,0,0;0,0,0;0,0,0];
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    t = behav_32{1}.theta(tt(ct),:)';
+    k = behav_32{1}.kappa(tt(ct),:)';
+    
+    [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
+    [c,h] = contour(hdata)%,'color',colours(i,:)); hold all;drawnow;
+    
+%     set(gca,'xticklabels',haxes{2})
+%     set(gca,'yticklabels',haxes{1})
+    view([-90 90])
+    pause;
+end
 %% Try subtracting torsion as mean kappa per theta outside contact.
 
 
