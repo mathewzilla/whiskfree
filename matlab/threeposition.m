@@ -372,7 +372,8 @@ title('Mean kappa, correct choice');
 %% Raw kapp for L/R/NG
 figure(7);clf
 
-colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+% colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+colours = [0,0,0;0,0,0;0,0,0];
 % colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
 % Plot approx pole positions as shaded boxes
 % 60-70, 80-90, 100-110 degrees
@@ -420,13 +421,15 @@ end
 
 % legend('Posterior pole','','Anterior pole','','No Go','')
 title('Mean abs theta, correct choice');
-
+xlim([0,2500])
 
 
 %% Raw theta for L/R/NG
 figure(9);clf
 % colours = [1,0,0,0.25;0,1,0,0.25;0,0,0,0.25];
-colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+% colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+
+colours = [0,0,0;0,0,0;0,0,0];
 % Plot approx pole positions as shaded boxes
 % 60-70, 80-90, 100-110 degrees
 titles = {'Posterior pole';'Anterior pole';'No Go'};
@@ -464,7 +467,7 @@ for i = 1:3;
     
     subplot(1,3,i)
     [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
-    surf(hdata,'edgecolor','none')
+    surf(linspace(-6e-3,6e-3,100),linspace(41,140,100),hdata,'edgecolor','none')
 %     set(gca,'xticklabels',haxes{2})
 %     set(gca,'yticklabels',haxes{1})
     view([-90 90])
@@ -473,7 +476,7 @@ end
 %% Countour plots of whisker position in the 3 trial types
 figure(11);
 clf;
-colours = [0,0,0;0,0,0;0,0,0];
+colours = [1,0,0;0,1,0;0,0,0];
 for i = 1:3;
     tt = find(behav_32{1}.trialtype == i);
     ct = find(behav_32{1}.choice(tt) == i);
@@ -481,13 +484,53 @@ for i = 1:3;
     k = behav_32{1}.kappa(tt(ct),:)';
     
     [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
-    [c,h] = contour(hdata)%,'color',colours(i,:)); hold all;drawnow;
+    contour(linspace(41,140,100),linspace(-6e-3,6e-3,100),hdata,'color',colours(i,:)); hold all;drawnow;
     
 %     set(gca,'xticklabels',haxes{2})
 %     set(gca,'yticklabels',haxes{1})
     view([-90 90])
     pause;
 end
+
+
+%% Vertical histograms of theta extrema for each trial type
+% O'Connor 2010a Fig 11.
+figure(12);
+clf;
+colours = [1,0,0;0,1,0;0,0,0];
+m_colours = [1,0.5,0.5;0.5,1,0.5;0.5,0.5,0.5];
+xvals = linspace(61,160,50);
+for i = 1:3;
+    tt = find(behav_32{1}.trialtype == i);
+    ct = find(behav_32{1}.choice(tt) == i);
+    t = behav_32{1}.theta(tt(ct),:)';
+    k = behav_32{1}.kappa(tt(ct),:)';
+    
+     
+    
+    % Fill dropped frames with mean
+    temp = mean(t(:))*ones(size(t));
+    
+    temp(find(t)) = t(find(t));;
+
+    mx = histc(max(temp),xvals);
+    
+    mn = histc(min(temp),xvals);
+    
+    subplot(1,3,i);
+    
+    % Bars of pole location
+    fill([0,30,30,0],[60,60,70,70],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
+    hold all
+    fill([0,30,30,0],[80,80,90,90],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+    fill([0,30,30,0],[100,100,110,110],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+   
+    barh(xvals,mx,'facecolor',m_colours(i,:),'edgecolor',m_colours(i,:));hold all
+    barh(xvals,mn,'facecolor','none','edgecolor',colours(i,:))
+    
+end
+
+
 %% Try subtracting torsion as mean kappa per theta outside contact.
 
 
