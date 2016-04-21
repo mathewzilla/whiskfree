@@ -332,19 +332,19 @@ end
 save ~/work/whiskfree/data/behav_36.mat behav_36
 
 %% 38
-clear behav_36
+clear behav_38
 
-dates = [60,64,67,68,12,14,17,20,21,24,27,63,66,4,6,9,16]; %{'060815_36a','070815_36a','070815_36b','080815_36a','090815_36a'};
+dates = [29,34,38,41,49,52,54,58,63,];
 % To track:
 % On trials:
 % Bad sessions: 
-% Missing data: i13,j86+101
+% Missing data:
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     i
 %     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'
-    cd Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
+    cd Dario' Campagner'/BEHAVIORAL' MOVIES'/38/
     
     files = dir;
     cd(files(dates(i)).name);
@@ -399,17 +399,17 @@ for i = 1:numel(dates);
         end
     end
     
-    behav_36{i}.kappa = kappa;
-    behav_36{i}.theta = theta;
+    behav_38{i}.kappa = kappa;
+    behav_38{i}.theta = theta;
     
-    behav_36{i}.startframe = startframes;
-    behav_36{i}.trial = trials;
-    behav_36{i}.choice = choices;
-    behav_36{i}.trialtype = trialtypes;
-    behav_36{i}.trialtype = trialtypes;
-    behav_36{i}.dropped = dropped;
+    behav_38{i}.startframe = startframes;
+    behav_38{i}.trial = trials;
+    behav_38{i}.choice = choices;
+    behav_38{i}.trialtype = trialtypes;
+    behav_38{i}.trialtype = trialtypes;
+    behav_38{i}.dropped = dropped;
         
-    behav_36{i}.name = files(dates(i)).name;
+    behav_38{i}.name = files(dates(i)).name;
 end
 
 save ~/work/whiskfree/data/behav_38.mat behav_38

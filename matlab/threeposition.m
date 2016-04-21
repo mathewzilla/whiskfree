@@ -334,11 +334,11 @@ save ~/work/whiskfree/data/behav_36.mat behav_36
 %% 38
 clear behav_38
 
-dates = [];
+dates = [29,34,38,41,49,52,58,8,12,15,37,46,56,9,10,13,21]%,60,64,67,68];
 % To track:
 % On trials:
 % Bad sessions: 
-% Missing data:
+% Missing data: 300715_38b
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     i
