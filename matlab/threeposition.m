@@ -419,6 +419,8 @@ save ~/work/whiskfree/data/behav_38.mat behav_38
 %% Load data for an example animal/session
 load ~/Dropbox/Data/3posdata/behav_32.mat
 
+this_mouse = behav_32;
+
 %% Image/plot whisker angle/curvature conditioned on trialtype/choice
 figure(1); clf;
 figure(2); clf; 
@@ -427,27 +429,27 @@ figure(4); clf;
 
 t_range =  1:5000;%500:2000;
 
-mx_t = max(behav_32{1}.theta(:));
-mx_k = max(behav_32{1}.kappa(:));
+mx_t = max(this_mouse{1}.theta(:));
+mx_k = max(this_mouse{1}.kappa(:));
 
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
+    tt = find(this_mouse{1}.trialtype == i);
     for j = 1:3;
-        ct = find(behav_32{1}.choice(tt) == j);
+        ct = find(this_mouse{1}.choice(tt) == j);
         figure(1);
-        subplot(3,3,i*3 - 3 + j); imagesc(behav_32{1}.theta(tt(ct),t_range)); hold all;
+        subplot(3,3,i*3 - 3 + j); imagesc(this_mouse{1}.theta(tt(ct),t_range)); hold all;
         title(['Ch:',num2str(j)])
         ylabel(['TT:', num2str(i)])
         figure(2)
-        subplot(3,3,i*3 - 3 + j); imagesc(behav_32{1}.kappa(tt(ct),t_range)); hold all;
+        subplot(3,3,i*3 - 3 + j); imagesc(this_mouse{1}.kappa(tt(ct),t_range)); hold all;
         title(['Ch:',num2str(j)])
         ylabel(['TT:', num2str(i)])
         figure(3);
-        subplot(3,3,i*3 - 3 + j); myeb(behav_32{1}.theta(tt(ct),t_range)); hold all;
+        subplot(3,3,i*3 - 3 + j); myeb(this_mouse{1}.theta(tt(ct),t_range)); hold all;
         title(['Ch:',num2str(j)])
         ylabel(['TT:', num2str(i)])
         figure(4)
-        subplot(3,3,i*3 - 3 + j); myeb(behav_32{1}.kappa(tt(ct),t_range)); hold all;
+        subplot(3,3,i*3 - 3 + j); myeb(this_mouse{1}.kappa(tt(ct),t_range)); hold all;
         title(['Ch:',num2str(j)])
         ylabel(['TT:', num2str(i)])
     
@@ -462,7 +464,7 @@ figure(4); suptitle('Kappa')
 
 %% Theta/Kappa for left/right/no go TOGETHER - correct trials
 figure(5); clf;
-colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.1];
+colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.01];
 % Plot approx pole positions as shaded boxes
 
 % 60-70, 80-90, 100-110 degrees
@@ -471,29 +473,29 @@ colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.1];
 % fill([80,80,90,90],[-6e-3,6e-3,6e-3,-6e-3],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
 % fill([100,100,110,110],[-6e-3,6e-3,6e-3,-6e-3],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
 
-
-for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-
-        ct = find(behav_32{1}.choice(tt) == i);
-%         ax(i*3 - 3 + j) = subplot(3,3,i*3 - 3 + j); 
-        t = behav_32{1}.theta(tt(ct),:)';
-        k = behav_32{1}.kappa(tt(ct),:)';
-%         h = plot(conv(t(:),gausswin(10,1),'same')./10,conv(k(:),gausswin(10,1),'same')./10,'.','color',colours(i,:),'markersize',1); hold all;
-          h = plot(conv(t(find(t)),gausswin(10,1),'same')./10,conv(k(find(t)),gausswin(10,1),'same')./10,'color',colours(i,:),'markersize',1); hold all;
+for s = 1:numel(this_mouse)
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype == i);
+        
+        ct = find(this_mouse{s}.choice(tt) == i);
+        %         ax(i*3 - 3 + j) = subplot(3,3,i*3 - 3 + j);
+        t = this_mouse{s}.theta(tt(ct),:)';
+        k = this_mouse{s}.kappa(tt(ct),:)';
+        %         h = plot(conv(t(:),gausswin(10,1),'same')./10,conv(k(:),gausswin(10,1),'same')./10,'.','color',colours(i,:),'markersize',1); hold all;
+        h = plot(conv(t(find(t)),gausswin(10,1),'same')./10,conv(k(find(t)),gausswin(10,1),'same')./10,'color',colours(i,:),'markersize',1); hold all;
+    end
 end
-
 legend('Posterior pole','Anterior pole','No Go')
 
 %% Theta/Kappa for left/right/no go SEPARATELY - all trials
 figure(6); clf;
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
+    tt = find(this_mouse{1}.trialtype == i);
     for j = 1:3;
-        ct = find(behav_32{1}.choice(tt) == j);
+        ct = find(this_mouse{1}.choice(tt) == j);
         ax(i*3 - 3 + j) = subplot(3,3,i*3 - 3 + j); 
-        t = behav_32{1}.theta(tt(ct),:)';
-        k = behav_32{1}.kappa(tt(ct),:)';
+        t = this_mouse{1}.theta(tt(ct),:)';
+        k = this_mouse{1}.kappa(tt(ct),:)';
         plot(conv(t(:),gausswin(10,1),'same')./10,conv(k(:),gausswin(10,1),'same')./10,'.','markersize',1); hold all;
         title(['Ch:',num2str(j)])
         ylabel(['TT:', num2str(i)])
@@ -504,50 +506,55 @@ end
 linkaxes(ax);
 
 %% Kappa for L/R/NG
-figure(7);clf
+figure(8);clf
 colours = [1,0,0;0,1,0;0,0,0];
-
-for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
-    
-    %     plot(mean(abs(behav_32{1}.kappa(tt(ct),:))));
-    data = bsxfun(@minus,(conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(behav_32{1}.kappa(tt(ct),1:100),2))';
-    m = mean(data');
-    sem = std(data'./sqrt(numel(ct)));
-    myeb(1:numel(m),m,sem,[colours(i,:),0]);
-    hold all
+for s = 1:numel(this_mouse)
+    subplot(4,3,s);
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype == i);
+        ct = find(this_mouse{s}.choice(tt) == i);
+        
+        %     plot(mean(abs(this_mouse{1}.kappa(tt(ct),:))));
+        data = bsxfun(@minus,(conv2(this_mouse{s}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(this_mouse{s}.kappa(tt(ct),1:100),2))';
+        m = mean(abs(data'));
+        sem = std(data'./sqrt(numel(ct)));
+        myeb(1:numel(m),m,sem,[colours(i,:),0]);
+        hold all
+    end
 end
-
-legend('Posterior pole','','Anterior pole','','No Go','')
-title('Mean kappa, correct choice');
+legend('Posterior pole','','Anterior pole','','No Go','','Location','BestOutside')
+suptitle('Mean kappa, correct choice');
 
 %% Raw kapp for L/R/NG
-figure(7);clf
+figure(9);clf
 
-% colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
-colours = [0,0,0;0,0,0;0,0,0];
+colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
+% colours = [0,0,0;0,0,0;0,0,0];
 % colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
 % Plot approx pole positions as shaded boxes
 % 60-70, 80-90, 100-110 degrees
 titles = {'Posterior pole';'Anterior pole';'No Go'};
-for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
-    subplot(1,3,i)
-    
-    %     plot((conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid'))./50 - mean(behav_32{1}.kappa(tt(ct),1:100),2),'color',colours(i,:));
-    %     plot(behav_32{1}.kappa(tt(ct),:)','color',colours(i,:));
-    plot(bsxfun(@minus,(conv2(behav_32{1}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(behav_32{1}.kappa(tt(ct),1:100),2))','color',colours(i,:))
-    title(titles{i})
-%     ylim([-6e-3,6e-3])
-    ylim([-1e-3,2e-3])
-    xlim([0,2500])
+for s = 1:numel(this_mouse)
+    clf
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype == i);
+        ct = find(this_mouse{s}.choice(tt) == i);
+        subplot(1,3,i)
+        
+        %     plot((conv2(this_mouse{1}.kappa(tt(ct),:)',ones(50,1),'valid'))./50 - mean(this_mouse{1}.kappa(tt(ct),1:100),2),'color',colours(i,:));
+        %     plot(this_mouse{1}.kappa(tt(ct),:)','color',colours(i,:));
+        plot(bsxfun(@minus,(conv2(this_mouse{s}.kappa(tt(ct),:)',ones(50,1),'valid')./50)',mean(this_mouse{s}.kappa(tt(ct),1:100),2))','color',colours(i,:))
+        title(titles{i})
+        %     ylim([-6e-3,6e-3])
+        ylim([-1e-3,2e-3])
+        xlim([0,2500])
+    end
+    suptitle(['Whisker curvature, correct choice. Mouse ',this_mouse{s}.name,'(Session ',num2str(s),')']);
+
+    pause
+
 end
-
-
 % legend('Posterior pole','','Anterior pole','','No Go','')
-suptitle('Whisker curvature, correct choice');
 %% Mean theta for L/R/NG
 figure(8);clf
 colours = [1,0,0;0,1,0;0,0,0];
@@ -561,12 +568,12 @@ fill([1,5000,5000,1],[100,100,110,110],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
 
 
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
     
-    %     plot(mean(abs(behav_32{1}.kappa(tt(ct),:))));
-    m = mean((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50);
-    sem = std((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50)./sqrt(numel(ct));
+    %     plot(mean(abs(this_mouse{1}.kappa(tt(ct),:))));
+    m = mean((conv2(this_mouse{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50);
+    sem = std((conv2(this_mouse{1}.theta(tt(ct),:)',ones(50,1),'valid')')./50)./sqrt(numel(ct));
     myeb(1:numel(m),m,sem,[colours(i,:),0]);
     hold all
 end
@@ -589,17 +596,17 @@ titles = {'Posterior pole';'Anterior pole';'No Go'};
 
 
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
     subplot(1,3,i)
     fill([1,5000,5000,1],[60,60,70,70],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
     hold all
     fill([1,5000,5000,1],[80,80,90,90],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
     fill([1,5000,5000,1],[100,100,110,110],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
     
-    plot((conv2(behav_32{1}.theta(tt(ct),:)',ones(50,1),'valid'))./50,'color',colours(i,:));
+    plot((conv2(this_mouse{1}.theta(tt(ct),:)',ones(50,1),'valid'))./50,'color',colours(i,:));
 
-%     plot(behav_32{1}.theta(tt(ct),:)','color',colours(i,:));
+%     plot(this_mouse{1}.theta(tt(ct),:)','color',colours(i,:));
     
     title(titles{i})
     ylim([40,140])
@@ -613,10 +620,10 @@ suptitle('Whisker angle, correct choice');
 %% Image plot of whisker position in the 3 trial types
 figure(11);
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
-    t = behav_32{1}.theta(tt(ct),:)';
-    k = behav_32{1}.kappa(tt(ct),:)';
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
+    t = this_mouse{1}.theta(tt(ct),:)';
+    k = this_mouse{1}.kappa(tt(ct),:)';
     
     subplot(1,3,i)
     [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
@@ -636,10 +643,10 @@ fill([120,120,130,130],[-6e-3,6e-3,6e-3,-6e-3],[0.8,0.8,0.8],'edgecolor',[0.8,0.
    
 colours = [0,1,0;1,0,0;0,0,0];
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
-    t = behav_32{1}.theta(tt(ct),:)';
-    k = behav_32{1}.kappa(tt(ct),:)';
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
+    t = this_mouse{1}.theta(tt(ct),:)';
+    k = this_mouse{1}.kappa(tt(ct),:)';
     
     [hdata,haxes] = hist3([t(find(t)),k(find(t))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
     contour(linspace(41,140,100),linspace(-6e-3,6e-3,100),hdata',10,'color',colours(i,:)); hold all;drawnow;
@@ -659,10 +666,10 @@ colours = [0,1,0;1,0,0;0,0,0];
 m_colours = [0.5,1,0.5;1,0.5,0.5;0.5,0.5,0.5];
 xvals = linspace(61,160,50);
 for i = 1:3;
-    tt = find(behav_32{1}.trialtype == i);
-    ct = find(behav_32{1}.choice(tt) == i);
-    t = behav_32{1}.theta(tt(ct),:)';
-    k = behav_32{1}.kappa(tt(ct),:)';
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
+    t = this_mouse{1}.theta(tt(ct),:)';
+    k = this_mouse{1}.kappa(tt(ct),:)';
     
      
     
