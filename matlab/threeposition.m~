@@ -85,7 +85,7 @@ for i = 1:numel(dates);
             choices(j) = xls_info(trial_num,205);
             startframes(j) = xls_info(trial_num,3);
             poleup(j) = xls_info(trial_num,4);
-%             try
+            try
                 load(var_files(j).name,'kappa_w','theta_w','r_base');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
                 theta_w = [circshift(theta_w,[0,-startframes(j)]),zeros(1,5000-numel(theta_w))];
@@ -94,14 +94,14 @@ for i = 1:numel(dates);
                 
                 % Base of tracked whisker, proxy for follicle position. Allows
                 % plotting angle to pole
-                fp_1(j,:) = [circshift(r_base(:,1,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
-                fp_2(j,:) = [circshift(r_base(:,2,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
+                fp_1(j,:) = [circshift(r_base(:,1,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
+                fp_2(j,:) = [circshift(r_base(:,2,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
                 
                 fname = [var_files(j).name(1:end-10),'.dat'];
                 % Use pole tracker to plot video frame and store pole location
                 % for triggerframe + 10
                 
-                [bp,frame] = poletracker(fname,14,1000,1);
+                [bp,frame] = poletracker(fname,14,1000,0);
                 barPos(j,:) = bp';
                 drawnow;
                 
@@ -117,7 +117,7 @@ for i = 1:numel(dates);
                 choices(j) = 0;
                 startframes(j) = 0;
                 dropped(j) = 1;
-                poleup = 0;
+                poleup(j) = 0;
                 barPos(j,:) = [0,0];
             end
         else
@@ -131,7 +131,7 @@ for i = 1:numel(dates);
             choices(j) = 0;
             startframes(j) = 0;
             dropped(j) = 1;
-            poleup = 0;
+            poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
     end
@@ -171,7 +171,7 @@ behav_32{10}.sync = 130;
 
 save ~/work/whiskfree/data/behav_32b.mat behav_32
 
-%% 33:
+% 33:
 clear behav_33
 
 dates = [4,5,6,8,11,19,23,26,30,33,17,20,21,24,34,55]; %{'110315_33a','120315_33a'}; % '120315_33b'/'130315_33a'/'160315_33a'/'160315_33b'/ 3 trials of '160315_33a' need tracking
@@ -225,8 +225,8 @@ for i = 1:numel(dates);
                 
                 % Base of tracked whisker, proxy for follicle position. Allows
                 % plotting angle to pole
-                fp_1(j,:) = [circshift(r_base(:,1,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
-                fp_2(j,:) = [circshift(r_base(:,2,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
+                fp_1(j,:) = [circshift(r_base(:,1,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
+                fp_2(j,:) = [circshift(r_base(:,2,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
                 
                 fname = [var_files(j).name(1:end-10),'.dat'];
                 % Use pole tracker to plot video frame and store pole location
@@ -247,7 +247,7 @@ for i = 1:numel(dates);
                 choices(j) = 0;
                 startframes(j) = 0;
                 dropped(j) = 1;
-                poleup = 0;
+                poleup(j) = 0;
                 barPos(j,:) = [0,0];
             end
             
@@ -262,7 +262,7 @@ for i = 1:numel(dates);
             choices(j) = 0;
             startframes(j) = 0;
             dropped(j) = 1;
-            poleup = 0;
+            poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
     end
@@ -289,21 +289,21 @@ end
 
 
 % 33 sync end
-% for i = 1:numel(behav_33)
-%     behav_33{i}.sync = numel(behav_33{i}.trialtype);
-% end
+for i = 1:numel(behav_33)
+    behav_33{i}.sync = numel(behav_33{i}.trialtype);
+end
 % 
 % % Unsynced exceptions
-% behav_333}.sync = 119;
-% behav_33{5}.sync = 193;
-% behav_33{7}.sync = 132;
+behav_33{8}.sync = 0;
+behav_33{11}.sync = 98;
+behav_33{12}.sync = 183;
 % behav_33{10}.sync = 130;
 
 save ~/work/whiskfree/data/behav_33b.mat behav_33
 
 
 
-%% 34:
+% 34:
 clear behav_34
 
 dates = [30,34]; % {'161214_34a','171214_34a'};
@@ -349,7 +349,7 @@ for i = 1:numel(dates);
             trialtypes(j) = xls_info(trial_num,204);
             choices(j) = xls_info(trial_num,205);
             startframes(j) = xls_info(trial_num,3);
-            
+            poleup(j) = xls_info(trial_num,4);
             try
                 load(var_files(j).name,'kappa_w','theta_w');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
@@ -359,8 +359,8 @@ for i = 1:numel(dates);
                 
                 % Base of tracked whisker, proxy for follicle position. Allows
                 % plotting angle to pole
-                fp_1(j,:) = [circshift(r_base(:,1,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
-                fp_2(j,:) = [circshift(r_base(:,2,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
+                fp_1(j,:) = [circshift(r_base(:,1,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
+                fp_2(j,:) = [circshift(r_base(:,2,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
                 
                 fname = [var_files(j).name(1:end-10),'.dat'];
                 % Use pole tracker to plot video frame and store pole location
@@ -381,7 +381,7 @@ for i = 1:numel(dates);
                 choices(j) = 0;
                 startframes(j) = 0;
                 dropped(j) = 1;
-                poleup = 0;
+                poleup(j) = 0;
                 barPos(j,:) = [0,0];
             end
         else
@@ -395,7 +395,7 @@ for i = 1:numel(dates);
             choices(j) = 0;
             startframes(j) = 0;
             dropped(j) = 1;
-            poleup = 0;
+            poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
     end
@@ -421,20 +421,20 @@ end
 
 
 
-% % 34 sync end
-% for i = 1:numel(behav_34)
-%     behav_34{i}.sync = numel(behav_34{i}.trialtype);
-% end
+% 34 sync end
+for i = 1:numel(behav_34)
+    behav_34{i}.sync = numel(behav_34{i}.trialtype);
+end
 % 
-% % Unsynced exceptions
-% behav_34{3}.sync = 119;
+% Unsynced exceptions
+behav_34{2}.sync = 168;
 % behav_34{5}.sync = 193;
 % behav_34{7}.sync = 132;
 % behav_34{10}.sync = 130;
 
 save ~/work/whiskfree/data/behav_34b.mat behav_34
 
-%% 36:
+% 36:
 clear behav_36
 
 dates = [60,64,67,68,12,14,17,20,21,24,27,63,66,4,6,9,16]; %{'060815_36a','070815_36a','070815_36b','080815_36a','090815_36a'};
@@ -445,9 +445,9 @@ dates = [60,64,67,68,12,14,17,20,21,24,27,63,66,4,6,9,16]; %{'060815_36a','07081
 clear kappa theta kappa_w theta_w
 for i = 1:numel(dates);
     i
-    %     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
-    cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'
-    cd Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
+        cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
+%     cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'
+%     cd Dario' Campagner'/BEHAVIORAL' MOVIES'/36/
     
     files = dir;
     cd(files(dates(i)).name);
@@ -482,6 +482,7 @@ for i = 1:numel(dates);
             trialtypes(j) = xls_info(trial_num,204);
             choices(j) = xls_info(trial_num,205);
             startframes(j) = xls_info(trial_num,3);
+            poleup(j) = xls_info(trial_num,4);
             try
                 load(var_files(j).name,'kappa_w','theta_w');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
@@ -491,8 +492,8 @@ for i = 1:numel(dates);
                 
                 % Base of tracked whisker, proxy for follicle position. Allows
                 % plotting angle to pole
-                fp_1(j,:) = [circshift(r_base(:,1,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
-                fp_2(j,:) = [circshift(r_base(:,2,1),[0,-startframes(j)])',zeros(1,5000-size(r_base,1))]';
+                fp_1(j,:) = [circshift(r_base(:,1,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
+                fp_2(j,:) = [circshift(r_base(:,2,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
                 
                 fname = [var_files(j).name(1:end-10),'.dat'];
                 % Use pole tracker to plot video frame and store pole location
@@ -515,7 +516,7 @@ for i = 1:numel(dates);
                 choices(j) = 0;
                 startframes(j) = 0;
                 dropped(j) = 1;
-                poleup = 0;
+                poleup(j) = 0;
                 barPos(j,:) = [0,0];
             end
         else
@@ -529,7 +530,7 @@ for i = 1:numel(dates);
             choices(j) = 0;
             startframes(j) = 0;
             dropped(j) = 1;
-            poleup = 0;
+            poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
     end
@@ -555,14 +556,14 @@ end
 
 
 
-% % 36 sync end
-% for i = 1:numel(behav_36)
-%     behav_36{i}.sync = numel(behav_36{i}.trialtype);
-% end
+% 36 sync end
+for i = 1:numel(behav_36)
+    behav_36{i}.sync = numel(behav_36{i}.trialtype);
+end
 % 
-% % Unsynced exceptions
-% behav_36{3}.sync = 119;
-% behav_36{5}.sync = 193;
+% Unsynced exceptions
+behav_36{14}.sync = 0;
+behav_36{15}.sync = 0;
 % behav_36{7}.sync = 132;
 % behav_36{10}.sync = 130;
 
@@ -626,8 +627,8 @@ for i = 1:numel(dates);
                 
                 % Base of tracked whisker, proxy for follicle position. Allows
                 % plotting angle to pole
-                fp_1(j,:) = [circshift(r_base(:,1,1),[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
-                fp_2(j,:) = [circshift(r_base(:,2,1),[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
+                fp_1(j,:) = [circshift(r_base(:,1,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
+                fp_2(j,:) = [circshift(r_base(:,2,1)',[0,-startframes(j)]),zeros(1,5000-size(r_base,1))]';
                 
                 fname = [var_files(j).name(1:end-10),'.dat'];
                 % Use pole tracker to plot video frame and store pole location
@@ -649,7 +650,7 @@ for i = 1:numel(dates);
                 choices(j) = 0;
                 startframes(j) = 0;
                 dropped(j) = 1;
-                poleup = 0;
+                poleup(j) = 0;
                 barPos(j,:) = [0,0];
             end
         else
@@ -663,7 +664,7 @@ for i = 1:numel(dates);
             choices(j) = 0;
             startframes(j) = 0;
             dropped(j) = 1;
-            poleup = 0;
+            poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
     end
@@ -708,7 +709,7 @@ save ~/work/whiskfree/data/behav_38.mat behav_38
 
 colours = [0,1,0;1,0,0;0.5,0.5,0.5];
 tt_name = {'Anterior';'Posterior';'No Go'};
-session = 2;
+session = 3;
 
 
 % % 32
@@ -762,8 +763,50 @@ for j = numel(var_files)-50 : numel(var_files) % 192:numel(var_files); % Looking
     end
 end
 
+
+%% Plot extracted bar position instead of loading the videos again
+% Add file loading if needed
+% load ~/work/whiskfree/data/behav_38b.mat
+% load ~/work/whiskfree/data/example_frame frame
+this_mouse = behav_32;
+
+% First check barPos makes sense
+for s = 1:numel(this_mouse)
+   clf;
+   imagesc(frame);
+   hold all
+   plot(this_mouse{s}.fp_1(:,1),this_mouse{s}.fp_2(:,2),'.')
+   hold all
+   plot(this_mouse{s}.barPos(:,1),this_mouse{s}.barPos(:,2),'.') 
+   title(['Mouse ',this_mouse{s}.name(end-2:end-1),' Session ',num2str(s),' (',this_mouse{s}.name(1:6),')'])
+   pause;
+end
+
+% Then plot barPos per trial type to see when things stop working
+% figure;
+for s = 1:numel(this_mouse)
+    clf
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype == i);
+        plot(tt,this_mouse{s}.barPos(tt,1));
+        hold all
+        plot(tt,this_mouse{s}.barPos(tt,1),'k.');
+ 
+    end
+    title(['Mouse ',this_mouse{s}.name(end-2:end-1),' Session ',num2str(s),' (',this_mouse{s}.name(1:6),')'])
+    pause
+    
+end
+
+
+
 %% Load data for an example animal/session
-load ~/Dropbox/Data/3posdata/behav_32.mat
+% load ~/Dropbox/Data/3posdata/behav_32.mat
+load ~/work/whiskfree/data/behav_32b.mat
+load ~/work/whiskfree/data/behav_33b.mat
+load ~/work/whiskfree/data/behav_34b.mat
+load ~/work/whiskfree/data/behav_36b.mat
+% load ~/work/whiskfree/data/behav_38.mat
 
 this_mouse = behav_32;
 
@@ -810,7 +853,9 @@ figure(4); suptitle('Kappa')
 
 %% Theta/Kappa for left/right/no go TOGETHER - correct trials
 figure(15); clf;
-colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.01];
+this_mouse = behav_36;
+% colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.1];
+colours = [1,0,0,0.1;0,1,0,0.1;0,0,0,0.1]; % Mouse 36 has reversed choice order
 % Plot approx pole positions as shaded boxes
 
 % 60-70, 80-90, 100-110 degrees
@@ -818,11 +863,15 @@ colours = [0,1,0,0.1;1,0,0,0.1;0,0,0,0.01];
 % hold all
 % fill([80,80,90,90],[-6e-3,6e-3,6e-3,-6e-3],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
 % fill([100,100,110,110],[-6e-3,6e-3,6e-3,-6e-3],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
-
+plot(0,0,'g');hold all;
+plot(0,0,'r')
+plot(0,0,'k')
 for s = 1:numel(this_mouse)
+%     figure
     for i = 1:3;
         v = 1:this_mouse{s}.sync;
-        tt = find(this_mouse{s}.trialtype(v) == i);
+%         tt = find(this_mouse{s}.trialtype(v) == i);
+        tt = v;
         
         ct = find(this_mouse{s}.choice(v(tt)) == i);
         %         ax(i*3 - 3 + j) = subplot(3,3,i*3 - 3 + j);
@@ -832,7 +881,11 @@ for s = 1:numel(this_mouse)
         h = plot(conv(t(find(t)),gausswin(10,1),'same')./10,conv(k(find(t)),gausswin(10,1),'same')./10,'color',colours(i,:),'markersize',1); hold all;
     end
 end
-legend('Posterior pole','Anterior pole','No Go')
+title(['Mouse ',this_mouse{s}.name(end-2:end-1),' coloured by choice'])
+set(gca,'XDir','reverse')
+legend('Anterior pole','Posterior pole','No Go')
+
+print('-dpng',['~/work/whiskfree/figs/pt_2/',this_mouse{s}.name(end-2:end-1),'_CHOICE_kappa_theta_alpha.png'])
 
 %% Theta/Kappa for left/right/no go SEPARATELY - all trials
 
@@ -861,7 +914,7 @@ end
 figure(8);clf
 colours = [1,0,0;0,1,0;0,0,0];
 for s = 1:numel(this_mouse)
-    subplot(4,3,s);
+    subplot(4,4,s);
     v = 1:this_mouse{s}.sync;
     for i = 1:3;
         tt = find(this_mouse{s}.trialtype(v) == i);
@@ -909,11 +962,77 @@ for s = 1:numel(this_mouse)
     
 end
 % legend('Posterior pole','','Anterior pole','','No Go','')
+
+%% Raw kappa/theta for all trials per mouse
+
+% colours = [0,0,0;0,0,0;0,0,0];
+% colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
+% Plot approx pole positions as shaded boxes
+% 60-70, 80-90, 100-110 degrees
+this_mouse = behav_36;
+
+titles = {'Posterior pole';'Anterior pole';'No Go'};
+k = cell(1,3);
+t = cell(1,3);
+for s = 1:numel(this_mouse)
+
+    v = 1:this_mouse{s}.sync;
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype(v) == i);
+        ct = find(this_mouse{s}.choice(v(tt)) == i);
+        
+        pu = this_mouse{s}.poleup(v(tt(ct)));
+        if ~isempty(pu)
+%             this_k = circshift(delta_k,1000-pu);
+%             this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
+        t{i} = [t{i},circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu)];
+        k{i} = [k{i},circshift(this_mouse{s}.kappa(v(tt(ct)),:)',1000-pu)];
+        %     plot((conv2(this_mouse{1}.kappa(tt(ct),:)',ones(50,1),'valid'))./50 - mean(this_mouse{1}.kappa(tt(ct),1:100),2),'color',colours(i,:));
+        %     plot(this_mouse{1}.kappa(tt(ct),:)','color',colours(i,:));
+%         plot(bsxfun(@minus,(conv2(this_mouse{s}.kappa(v(tt(ct)),:)',ones(50,1),'valid')./50)',mean(this_mouse{s}.kappa(v(tt(ct)),1:100),2))','color',colours(i,:))
+        end
+    end
+    
+    
+end
+
+figure(10);clf
+clear ax bx
+colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
+for i = 1:3
+    ax(i) = subplot(2,3,i);
+    plot(t{i},'color',colours(i,:));
+    hold all
+    title(titles{i})
+    bx(i) = subplot(2,3,i+3);
+    plot(k{i},'color',colours(i,:));
+    hold all
+    %     ylim([-6e-3,6e-3])
+%     ylim([-1e-3,2e-3])
+%     xlim([0,2500])
+end
+
+subplot(2,3,1);
+ylabel('Angle')
+subplot(2,3,4);
+ylabel('Curvature')
+
+
+suptitle(['Whisker curvature, correct choice. Mouse ',this_mouse{s}.name(end-2:end-1)]);
+linkaxes(ax)
+linkaxes(bx)
+% legend('Posterior pole','','Anterior pole','','No Go','')
+print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
+%%
+set(ax(1),'xlim',[500,1500])
+set(bx(1),'xlim',[500,1500])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_ZOOM_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
+
 %% Mean theta for L/R/NG
 figure(8);clf
 colours = [0,1,0;1,0,0;0,0,0];
 
-for s = 1:numel(this_mouse);
+for s = 1:12%numel(this_mouse);
     subplot(4,3,s);
     
     % Plot approx pole positions as shaded boxes
@@ -928,22 +1047,27 @@ for s = 1:numel(this_mouse);
     for i = 1:3;
         tt = find(this_mouse{s}.trialtype(v) == i);
         ct = find(this_mouse{s}.choice(v(tt)) == i);
-        
-        %     plot(mean(abs(this_mouse{1}.kappa(tt(ct),:))));
-        m = mean((conv2(this_mouse{s}.theta(v(tt(ct)),:)',ones(50,1),'valid')')./50);
-        sem = std((conv2(this_mouse{s}.theta(v(tt(ct)),:)',ones(50,1),'valid')')./50)./sqrt(numel(ct));
-        myeb(1:numel(m),m,sem,[colours(i,:),0]);
-        hold all
+                pu = this_mouse{s}.poleup(v(tt(ct)));
+        if ~isempty(pu)
+
+            this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
+            this_k = circshift(this_mouse{s}.kappa(v(tt(ct)),:)',1000-pu);
+            %     plot(mean(abs(this_mouse{1}.kappa(tt(ct),:))));
+            m = mean((conv2(this_t,ones(50,1),'valid')')./50);
+            sem = std((conv2(this_t,ones(50,1),'valid')')./50)./sqrt(numel(ct));
+            myeb(1:numel(m),m,sem,[colours(i,:),0]);
+            hold all
+        end
     end
     
     
     % legend('Posterior pole','','Anterior pole','','No Go','')
-    xlim([0,2500])
+    xlim([550,2500])
     title(this_mouse{s}.name)
 end
 
 suptitle('Mean abs theta, correct choice');
-xlim([0,2500])
+% xlim([0,2500])
 
 
 %% Raw theta for L/R/NG
@@ -1039,6 +1163,7 @@ mp4obj.Quality = 100; % Default is 75
 open(mp4obj)
 
 %% All trials simultaneously, over time
+this_mouse = behav_36;
 clf;
 hold all;
 t = cell(1,3);
@@ -1052,28 +1177,38 @@ for s = 1:numel(this_mouse)
         %         delta_t = this_mouse{s}.theta(v(tt(ct)),:)';
         %         delta_t = bsxfun(@minus,delta_t',mean(delta_t(1:100,:))')' + mean(mean(delta_t(1:100,:)));
         delta_k = this_mouse{s}.kappa(v(tt(ct)),:)';
-        delta_k = bsxfun(@minus,delta_k',nanmean(delta_k(600:800,:))')';
-        
-        
-        t{i} = [t{i},conv2(this_mouse{s}.theta(v(tt(ct)),:)',ones(10,1),'same')./10];
-        %                 k{i} = [k{i},conv2(this_mouse{s}.kappa(v(tt(ct)),:)',ones(10,1),'same')./10];
-        %         t{i} = [t{i},delta_t];
-        k{i} = [k{i},conv2(delta_k,ones(10,1),'same')./10];
-        
+        if ~isempty(delta_k)
+            pu = this_mouse{s}.poleup(v(tt(ct)));
+            
+            this_k = circshift(delta_k,1000-pu);
+            this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
+            
+            
+            this_k = bsxfun(@minus,this_k',nanmean(this_k(990:1000,:))')';
+%             this_t = bsxfun(@minus,this_t',nanmean(this_t(990:1000,:))')' + 90;
+            
+            t{i} = [t{i},conv2(this_t,ones(10,1),'same')./10];
+            %                 k{i} = [k{i},conv2(this_mouse{s}.kappa(v(tt(ct)),:)',ones(10,1),'same')./10];
+            %         t{i} = [t{i},delta_t];
+            k{i} = [k{i},conv2(this_k,ones(10,1),'same')./10];
+        end
     end
 end
 
-fill([95,95,105,105],[-6e-3,6e-3,6e-3,-6e-3],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
-hold all
-fill([70,70,80,80],[-6e-3,6e-3,6e-3,-6e-3],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
-fill([120,120,130,130],[-6e-3,6e-3,6e-3,-6e-3],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+%% Plot
 
-m_plot_1 = plot(t{1}(1,:),k{1}(1,:),'g.')%,'markersize',1);
-m_plot_2 = plot(t{2}(1,:),k{2}(1,:),'r.')%,'markersize',1);
+ylims = [-1e-2,1e-2];
+fill([95,95,105,105],[ylims,fliplr(ylims)],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+hold all
+fill([70,70,80,80],[ylims,fliplr(ylims)],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
+fill([120,120,130,130],[ylims,fliplr(ylims)],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+
+m_plot_1 = plot(t{1}(1,:),k{1}(1,:),'r.')%,'markersize',1);
+m_plot_2 = plot(t{2}(1,:),k{2}(1,:),'g.')%,'markersize',1);
 m_plot_3 = plot(t{3}(1,:),k{3}(1,:),'k.')%,'markersize',1);
 
 set(gca,'Xdir','reverse')
-for i = 2:4500
+for i = 500:4500
     
     set(m_plot_1,'YData',k{1}(i,:));
     set(m_plot_1,'XData',t{1}(i,:));
@@ -1083,7 +1218,7 @@ for i = 2:4500
     set(m_plot_3,'YData',k{3}(i,:));
     set(m_plot_3,'XData',t{3}(i,:));
     
-    ylim([-6e-3,6e-3])
+    ylim(ylims)
     xlim([40,160])
     title(['Time:',num2str(i),' Mouse ',this_mouse{1}.name(end-2:end-1)])
     drawnow;
@@ -1094,6 +1229,25 @@ end
 
 % close(mp4obj)
 
+%% Plot average for all trials for a given mouse, using arrays generated above in movie loop
+% colours = [1,0,0;0,1,0;0,0,0];
+colours = [0,1,0;1,0,0;0,0,0];
+clf
+for i = [3,1,2];
+%     m = mean((conv2(t{i},ones(50,1),'same')')./50);
+%     sem = std((conv2(t{i},ones(50,1),'same')')./50) ./sqrt(size(t{i},2));
+    m = mean(t{i}');
+    sem = std(t{i}') ./sqrt(size(t{i},2));
+    myeb(1:numel(m),m,sem,[colours(i,:),0])
+    hold all
+end
+plot([1000,1000],[75,100],'k--')
+xlabel('Time from trial start (ms)')
+ylabel('Whisker angle')
+
+title(['Mean whisker angle on all correct trials, Mouse ',this_mouse{1}.name(end-2:end-1)])
+xlim([500,3500])
+print('-dpng',['~/work/whiskfree/figs/pt_2/',this_mouse{s}.name(end-2:end-1),'_mean_angle.png'])
 
 %% Plot kappa/theta over time in chunks
 clf;
@@ -1125,7 +1279,7 @@ delta_w1 = bsxfun(@minus,this_mouse{s}.fp_1,this_mouse{s}.barPos(:,1));
 delta_w2 = bsxfun(@minus,this_mouse{s}.fp_2,this_mouse{s}.barPos(:,2));
 
 % angle of contact point wrt fp
-theta_0 = atan2(delta_w1,delta_w2)*180./pi; 
+theta_0 = atan2(delta_w2,delta_w1)*180./pi;%+90; 
 
 %% For 5 trials of a given type, plot angle to the pole
 v = 1:this_mouse{s}.sync;
@@ -1136,7 +1290,16 @@ for i = 1:3;
         
         t = this_mouse{s}.theta(v(tt(ct)),:)';
         k = this_mouse{s}.kappa(v(tt(ct)),:)'; 
+        
+        f1 = this_mouse{s}.fp_1(v(tt(ct)),:)';
+        f2 = this_mouse{s}.fp_2(v(tt(ct)),:)';
+        
+        t0 = theta_0(v(tt(ct)),:)';
+        
+        
 end
+
+
 
 %% Image of theta/kappa for all trials of a trial type
 titles = {'Posterior pole';'Anterior pole';'No Go'};
