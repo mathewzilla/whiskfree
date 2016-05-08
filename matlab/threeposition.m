@@ -417,7 +417,7 @@ save ~/work/whiskfree/data/behav_38.mat behav_38
 %% NOTE: More data is ready for tracking on Isilon for 32,33 and 34
 
 %% Load data for an example animal/session
-load ~/Dropbox/Data/3posdata/behav_32.mat
+load ~/Dropbox/Data/3posdata/behav_36b.mat
 
 %% Image/plot whisker angle/curvature conditioned on trialtype/choice
 figure(1); clf;
@@ -688,6 +688,26 @@ for i = 1:3;
     
 end
 
+
+%% Image plot where every column is a histogram (so a 2D histogram of theta by time)
+figure(16);
+clf 
+clear ax
+for i = 1:3;
+    tt = find(this_mouse{1}.trialtype == i);
+    ct = find(this_mouse{1}.choice(tt) == i);
+    t = this_mouse{1}.theta(tt(ct),:)';
+    k = this_mouse{1}.kappa(tt(ct),:)';
+    
+    ax(i) = subplot(3,1,i)
+    [hdata,haxes] = hist3([t(find(t)),mod(find(t),5000)],'edges',{linspace(41,140,50);linspace(1,5000,100)});
+    surf(linspace(1,5000,100),linspace(41,140,50),hdata,'edgecolor','none')
+    view([0,90])
+    %     set(gca,'xticklabels',haxes{2})
+%     set(gca,'yticklabels',haxes{1})
+%     view([-90 90])
+end
+linkaxes(ax)
 
 %% Try subtracting torsion as mean kappa per theta outside contact.
 
