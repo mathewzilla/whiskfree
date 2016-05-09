@@ -217,7 +217,7 @@ for i = 1:numel(dates);
             startframes(j) = xls_info(trial_num,3);
             poleup(j) = xls_info(trial_num,4);
             try
-                load(var_files(j).name,'kappa_w','theta_w');
+                load(var_files(j).name,'kappa_w','theta_w','r_base');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
                 theta_w = [circshift(theta_w,[0,-startframes(j)]),zeros(1,5000-numel(theta_w))];
                 kappa(j,:) = kappa_w;
@@ -293,6 +293,7 @@ for i = 1:numel(behav_33)
     behav_33{i}.sync = numel(behav_33{i}.trialtype);
 end
 % 
+                % plotting angle to pole
 % % Unsynced exceptions
 behav_33{8}.sync = 0;
 behav_33{11}.sync = 98;
@@ -351,7 +352,7 @@ for i = 1:numel(dates);
             startframes(j) = xls_info(trial_num,3);
             poleup(j) = xls_info(trial_num,4);
             try
-                load(var_files(j).name,'kappa_w','theta_w');
+                load(var_files(j).name,'kappa_w','theta_w','r_base');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
                 theta_w = [circshift(theta_w,[0,-startframes(j)]),zeros(1,5000-numel(theta_w))];
                 kappa(j,:) = kappa_w;
@@ -484,7 +485,7 @@ for i = 1:numel(dates);
             startframes(j) = xls_info(trial_num,3);
             poleup(j) = xls_info(trial_num,4);
             try
-                load(var_files(j).name,'kappa_w','theta_w');
+                load(var_files(j).name,'kappa_w','theta_w','r_base');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
                 theta_w = [circshift(theta_w,[0,-startframes(j)]),zeros(1,5000-numel(theta_w))];
                 kappa(j,:) = kappa_w;
@@ -975,7 +976,7 @@ end
 % colours = [0,0,0;0,0,0;0,0,0];
 % colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1];
 
-load ~/Dropbox/Data/3posdata/behav_34b.mat
+% load ~/Dropbox/Data/3posdata/behav_34b.mat
 
 % this_mouse = behav_36;
 this_mouse = behav_36;
@@ -1013,41 +1014,6 @@ for s = 1:numel(this_mouse)
     
     
 end
-
-% 
-% %% Plot theta/kappa on each trial with transparent-ish lines
-% figure(10);clf
-% clear ax bx
-% % colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1]; % 36
-% colours = [0,0,0;0,0,0;0,0,0]
-% for i = 1:3
-%     ax(i) = subplot(2,3,i);
-%     plot(t{i},'color',colours(i,:));
-%     hold all
-%     title(titles{i})
-%     bx(i) = subplot(2,3,i+3);
-%     plot(k{i},'color',colours(i,:));
-%     hold all
-%     %     ylim([-6e-3,6e-3])
-% %     ylim([-1e-3,2e-3])
-% %     xlim([0,2500])
-% end
-% 
-% subplot(2,3,1);
-% ylabel('Angle')
-% subplot(2,3,4);
-% ylabel('Curvature')
-% 
-% 
-% suptitle(['Whisker curvature, correct choice. Mouse ',this_mouse{s}.name(end-2:end-1)]);
-% linkaxes(ax)
-% linkaxes(bx)
-% % legend('Posterior pole','','Anterior pole','','No Go','')
-% % print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
-% %%
-% set(ax(1),'xlim',[500,1500])
-% set(bx(1),'xlim',[500,1500])
-% print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_ZOOM_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
 
 %% Mean and sem theta/kappa
 figure(8); clf;
@@ -1318,7 +1284,137 @@ print('-dpng',['~/work/whiskfree/figs/pt_2/Mouse_',this_mouse{s}.name(end-2:end-
 % end of pt_2 figs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Raw theta for L/R/NG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Real pole angle stuff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Compute + plot angle to the pole from the whisker 'base'
+animal = {'behav_32';'behav_33';'behav_34';'behav_36'};
+
+clf;
+clear ax
+for a = 1:4;
+    this_mouse = eval(animal{a});
+    for s = 1:numel(this_mouse)
+        delta_w1 = bsxfun(@minus,this_mouse{s}.fp_1,this_mouse{s}.barPos(:,1));
+        delta_w2 = bsxfun(@minus,this_mouse{s}.fp_2,this_mouse{s}.barPos(:,2));
+        
+        % angle of contact point wrt fp
+        this_mouse{s}.theta_0 = atan2(delta_w1,delta_w2)*180./pi +90;
+    end
+    s = 2
+    % Dummy point to display whisker angle from fp
+    dummy_x = this_mouse{s}.fp_1 + (100.*cos(this_mouse{s}.theta./180.*pi));
+    dummy_y = this_mouse{s}.fp_2 - (100.*sin(this_mouse{s}.theta./180.*pi)); % minus to account for flipped y axis in image
+    
+    %% For all trials in a session of a given type, plot angle to the pole
+    v = 1:this_mouse{s}.sync;
+    ax(a) = subplot(2,2,a);
+    hold all
+    for i = 1:3;
+        tt = find(this_mouse{s}.trialtype(v) == i);
+        ct = find(this_mouse{s}.choice(v(tt)) == i);
+        
+        
+        t = this_mouse{s}.theta(v(tt(ct)),:)';
+        k = this_mouse{s}.kappa(v(tt(ct)),:)';
+        
+        f1 = this_mouse{s}.fp_1(v(tt(ct)),:)';
+        f2 = this_mouse{s}.fp_2(v(tt(ct)),:)';
+        
+        t0 = this_mouse{s}.theta_0(v(tt(ct)),:)';
+        
+        plot(t0,'color',m_colours(i,:))
+        
+    end
+    title(['Mouse ',this_mouse{s}.name(end-2:end-1)])
+end
+suptitle('Angle to the pole')
+linkaxes(ax)
+% print('-dpng',['~/work/whiskfree/figs/pt_2/All_mice_angle_to_pole.png'])
+
+%% Plot fp, pole position, whisker angle and angle to pole on top of example frame
+s = 1;
+trial = 53;
+
+t = this_mouse{s}.theta(trial,:)';
+k = this_mouse{s}.kappa(trial,:)';
+
+f1 = this_mouse{s}.fp_1(trial,:)';
+f2 = this_mouse{s}.fp_2(trial,:)';
+
+d1 = dummy_x(trial,:)';
+d2 = dummy_y(trial,:)';
+
+t0 = theta_0(trial,:)';
+bp = this_mouse{s}.barPos(trial,:);
+
+
+clf;
+imagesc(frame)
+hold all
+plot(bp(1),bp(2),'c.','markersize',15)
+plot(bp(1),bp(2),'wo','markersize',5)
+i = 499;
+fp_plot = plot([f1(i),bp(1)],[f2(i),bp(2)],'c');
+dp_plot = plot([f1(i),d1(1)],[f2(i),d2(1)],'r');
+
+for i = 500:2500;
+
+    set(fp_plot,'XData',[f1(i),bp(1)]);
+    set(fp_plot,'YData',[f2(i),bp(2)]);
+    set(dp_plot,'XData',[f1(i),d1(i)]);
+    set(dp_plot,'YData',[f2(i),d2(i)]);
+    
+    title(['Angle_W: ',num2str(round(t(i))),', Angle_P: ',num2str(round(t0(i))),'. Frame:',num2str(i)])
+    drawnow
+end
+
+%% Plot kappa given angle to the pole
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plots using pole angle info
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Plot theta/kappa on each trial with transparent-ish lines - NEW MATLAB ONLY
+figure(10);clf
+clear ax bx
+% colours = [0,0,0,0.1;0,0,0,0.1;0,0,0,0.1]; % 36
+% colours = [0,0,0;0,0,0;0,0,0]
+for i = 1:3
+    ax(i) = subplot(2,3,i);
+    plot(t{i},'color',[colours(i,:),0.1]);
+    hold all
+    title(titles{i})
+    bx(i) = subplot(2,3,i+3);
+    plot(k{i},'color',[colours(i,:),0.1]);
+    hold all
+    %     ylim([-6e-3,6e-3])
+%     ylim([-1e-3,2e-3])
+%     xlim([0,2500])
+end
+
+subplot(2,3,1);
+ylabel('Angle')
+subplot(2,3,4);
+ylabel('Curvature')
+
+
+suptitle(['Whisker curvature, correct choice. Mouse ',this_mouse{s}.name(end-2:end-1)]);
+linkaxes(ax)
+linkaxes(bx)
+% legend('Posterior pole','','Anterior pole','','No Go','')
+% print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
+%%
+set(ax(1),'xlim',[500,1500])
+set(bx(1),'xlim',[500,1500])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Curvature_angle_alltrial_ZOOM_Mouse_',this_mouse{s}.name(end-2:end-1),'.png'])
+
+%% Raw theta for L/R/NG separate coloured plots w/ lines for a given session.
 % figure(9);clf
 % colours = [1,0,0,0.25;0,1,0,0.25;0,0,0,0.25];
 colours = [0,0,0,0.25;0,0,0,0.25;0,0,0,0.25];
@@ -1354,6 +1450,9 @@ for s = 1:numel(this_mouse)
     suptitle(['Whisker angle, correct choice. Mouse',this_mouse{s}.name]);
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plots using time (inc movies)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plot mean theta and kappa for each trial type in a session together on a single theta/kappa plot, coloured by time
 
@@ -1497,37 +1596,8 @@ title(['Mean whisker angle on all correct trials, Mouse ',this_mouse{1}.name(end
 xlim([500,3500])
 % print('-dpng',['~/work/whiskfree/figs/pt_2/',this_mouse{s}.name(end-2:end-1),'_mean_angle.png'])
 
-
-%% Plot of angle to the pole from the whisker 'base'
-s = 1
-delta_w1 = bsxfun(@minus,this_mouse{s}.fp_1,this_mouse{s}.barPos(:,1));
-delta_w2 = bsxfun(@minus,this_mouse{s}.fp_2,this_mouse{s}.barPos(:,2));
-
-% angle of contact point wrt fp
-theta_0 = atan2(delta_w1,delta_w2)*180./pi;%+90; 
-
-%% For 5 trials of a given type, plot angle to the pole
-v = 1:this_mouse{s}.sync;
-% for i = 1:3;
-        tt = find(this_mouse{s}.trialtype(v) == i);
-        ct = find(this_mouse{s}.choice(v(tt)) == i);
-        
-        
-        t = this_mouse{s}.theta(v(tt(ct)),:)';
-        k = this_mouse{s}.kappa(v(tt(ct)),:)'; 
-        
-        f1 = this_mouse{s}.fp_1(v(tt(ct)),:)';
-        f2 = this_mouse{s}.fp_2(v(tt(ct)),:)';
-        
-        t0 = theta_0(v(tt(ct)),:)';
-        
-        
-% end
-
-
-
 %% Image of theta/kappa for all trials of a trial type
-titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
+% titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
 clf
 
 % work out max/min for normalisation
@@ -1553,7 +1623,14 @@ subplot(2,3,1);
 ylabel('Theta')
 subplot(2,3,4);
 ylabel('Kappa')
+xlabel('Time since trial start (ms)')
 
+suptitle(['Mouse ',this_mouse{s}.name(end-2:end-1),' (pole-up at 500ms)'])
+
+print('-dpng',['~/work/whiskfree/figs/pt_2/All_mice_angle_to_pole.png'])
+
+%% Concatenate data to make one image per mouse on same axis
+% TO DO add ticks/lines for sessions + trialtypes
 
 %% Image plot of whisker position in the 3 trial types (based on t and k calculated above)
 figure(11);
