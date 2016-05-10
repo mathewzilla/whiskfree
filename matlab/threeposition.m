@@ -978,12 +978,12 @@ end
 
 % load ~/Dropbox/Data/3posdata/behav_34b.mat
 
-% this_mouse = behav_36;
 this_mouse = behav_36;
 colours = [1,0,0;0,1,0;0,0,0]; % 36
 m_colours = [1,0.5,0.5;0.5,1,0.5;0.5,0.5,0.5]; % 36
 titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
- 
+
+% this_mouse = behav_32;
 % colours = [0,1,0;1,0,0;0,0,0]; % Others
 % m_colours = [0.5,1,0.5;1,0.5,0.5;0.5,0.5,0.5]; % Others
 % titles = {'Anterior pole';'Posterior pole';'No Go'}; % Others
@@ -1499,10 +1499,9 @@ for i = 2:4500
 end
 
 %% Code to make a movie
-data.savefile = '/media/mathew/Bigger Data1/whisker_movies/32_stim_by_time_deltaK';
+data.savefile = '/media/mathew/Bigger Data1/whisker_movies/34_example';
 % New movie setup
 data.profile = 'Motion JPEG AVI'; % This is the default. Update mp4.Quality below to ensure best conversion quality possible (note setting quality to 100 increases files size from 37MB to 187MB)
-% data.profile = 'MPEG-4'; % This is tiny. Good for talks. Cannot be read by Janelia Whisker Tracker, and doesn't work on Linux
 mp4obj = VideoWriter(data.savefile,data.profile);
 mp4obj.FrameRate = 50;%video.header.framerate/20;
 mp4obj.Quality = 100; % Default is 75
@@ -1619,6 +1618,8 @@ for i = 1:3;
     imagesc(k{i}(500:2500,:)')%./normy)
     
 end
+colormap(cubehelix)
+
 subplot(2,3,1);
 ylabel('Theta')
 subplot(2,3,4);
@@ -1627,26 +1628,77 @@ xlabel('Time since trial start (ms)')
 
 suptitle(['Mouse ',this_mouse{s}.name(end-2:end-1),' (pole-up at 500ms)'])
 
-print('-dpng',['~/work/whiskfree/figs/pt_2/All_mice_angle_to_pole.png'])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Angle_Kappa_Image_separates_M',this_mouse{1}.name(end-2:end-1),'.png'])
 
-%% Concatenate data to make one image per mouse on same axis
+%% Concatenate data to make one image per mouse on same axis - ANGLE
 % TO DO add ticks/lines for sessions + trialtypes
+figure(1);
+clf;
+theta_data = [t{1}(500:2500,:)';t{2}(500:2500,:)';t{3}(500:2500,:)'];
+theta_data(theta_data<45) = 45;
+imagesc(theta_data)
+
+colormap(cubehelix)
+colorbar
+% imagesc(bsxfun(@minus,theta_data,mean(theta_data(:,1:100)')')) ; % Delta theta 
+hold all
+plot([0.5,1999.5],[size(t{1},2),size(t{1},2)],'w')
+plot([0.5,1999.5],size(t{1},2)+size(t{2},2)*ones(2,1),'w')
+
+plot([500,500],[0.5,size(theta_data,1)-0.5],'w--')
+
+plot(2000*ones(size(t{1},2)),1:size(t{1},2),'*','color',colours(1,:))
+plot(2000*ones(size(t{2},2)),size(t{1},2)+1:size(t{1},2)+size(t{2},2),'*','color',colours(2,:))
+plot(2000*ones(size(t{3},2)),size(t{1},2)+size(t{2},2)+1:size(t{1},2)+size(t{2},2)+size(t{3},2),'*','color',colours(3,:))
+
+title(['Angle. All trials. Mouse ',this_mouse{1}.name(end-2:end-1)])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Angle_Image_together_M',this_mouse{1}.name(end-2:end-1),'.png'])
+
+%% Concatenate data to make one image per mouse on same axis - KAPPA
+% TO DO add ticks/lines for sessions + trialtypes
+figure(3);
+clf;
+kappa_data = [k{1}(500:2500,:)';k{2}(500:2500,:)';k{3}(500:2500,:)'];
+kappa_data(kappa_data<-4e-3) = -4e-3; % -4
+kappa_data(kappa_data>4e-3) = 4e-3;   %  2
+imagesc(kappa_data)
+
+colormap(cubehelix)
+colorbar
+% imagesc(bsxfun(@minus,theta_data,mean(theta_data(:,1:100)')')) ; % Delta theta 
+hold all
+plot([0.5,1999.5],[size(k{1},2),size(k{1},2)],'w')
+plot([0.5,1999.5],size(k{1},2)+size(k{2},2)*ones(2,1),'w')
+
+plot([500,500],[0.5,size(kappa_data,1)-0.5],'w--')
+
+plot(2000*ones(size(k{1},2)),1:size(k{1},2),'*','color',colours(1,:))
+plot(2000*ones(size(k{2},2)),size(k{1},2)+1:size(k{1},2)+size(k{2},2),'*','color',colours(2,:))
+plot(2000*ones(size(k{3},2)),size(k{1},2)+size(k{2},2)+1:size(k{1},2)+size(k{2},2)+size(k{3},2),'*','color',colours(3,:))
+
+title(['Curvature. All trials. Mouse ',this_mouse{1}.name(end-2:end-1)])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Kappa_Image_together_M',this_mouse{1}.name(end-2:end-1),'.png'])
 
 %% Image plot of whisker position in the 3 trial types (based on t and k calculated above)
 figure(11);
 clf;
 clear hdata
 for i = 1:3;
-    ax(i) = subplot_tight(3,1,i)
+    ax(i) = subplot(3,1,i)
     [hdata{i},haxes] = hist3([t{i}(find(t{i})),k{i}(find(t{i}))],'edges',{linspace(41,140,100);linspace(-6e-3,6e-3,100)});
-    surf(linspace(41,140,100),linspace(-6e-3,6e-3,100),hdata{i}','edgecolor','none')
+%     surf(linspace(41,140,100),linspace(-6e-3,6e-3,100),hdata{i}','edgecolor','none')
+
     %     set(gca,'xticklabels',haxes{2})
     %     set(gca,'yticklabels',haxes{1})
-    view([0 90])
+%     view([0 90])
     %         axis off
+        imagesc(hdata{i}')
+        set(gca,'Ydir','normal')
+        title(titles{i})
 end
 linkaxes(ax);
-
+suptitle(['Angle vs Curvature. All trials. Mouse ',this_mouse{1}.name(end-2:end-1)])
+print('-dpng',['~/work/whiskfree/figs/pt_2/Theta_kappa_2D_hist_M',this_mouse{1}.name(end-2:end-1),'.png'])
 %% Countour plots of whisker position in the 3 trial types
 figure(13);
 clf;
@@ -1671,6 +1723,11 @@ for i = 1:3;
     
 end
 title(this_mouse{s}.name)
+
+
+
+%% PCA of whisking. All trials then by trial type
+
 
 
 %% Try subtracting torsion as mean kappa per theta outside contact.
