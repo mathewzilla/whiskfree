@@ -1499,7 +1499,8 @@ for i = 2:4500
 end
 
 %% Code to make a movie
-data.savefile = '/media/mathew/Bigger Data1/whisker_movies/32_stim_by_time_deltaK';
+% data.savefile = '/media/mathew/Bigger Data1/whisker_movies/32_stim_by_time_deltaK';
+data.savefile = 'example_movie_2'
 % New movie setup
 data.profile = 'Motion JPEG AVI'; % This is the default. Update mp4.Quality below to ensure best conversion quality possible (note setting quality to 100 increases files size from 37MB to 187MB)
 % data.profile = 'MPEG-4'; % This is tiny. Good for talks. Cannot be read by Janelia Whisker Tracker, and doesn't work on Linux
@@ -1508,6 +1509,7 @@ mp4obj.FrameRate = 50;%video.header.framerate/20;
 mp4obj.Quality = 100; % Default is 75
 
 open(mp4obj)
+
 
 %% All trials simultaneously, over time
 this_mouse = behav_36;
@@ -1544,18 +1546,19 @@ end
 
 %% Plot
 
+fig = figure(3);clf;
 ylims = [-1e-2,1e-2];
-fill([95,95,105,105],[ylims,fliplr(ylims)],[0.8,1,0.8],'edgecolor',[0.8,1,0.8]);
+fill([95,95,105,105],[ylims,fliplr(ylims)],m_colours(1,:),'edgecolor',m_colours(1,:));
 hold all
-fill([70,70,80,80],[ylims,fliplr(ylims)],[1,0.8,0.8],'edgecolor',[1,0.8,0.8]);
-fill([120,120,130,130],[ylims,fliplr(ylims)],[0.8,0.8,0.8],'edgecolor',[0.8,0.8,0.8]);
+fill([120,120,130,130],[ylims,fliplr(ylims)],m_colours(2,:),'edgecolor',m_colours(3,:));
+fill([150,150,160,160],[ylims,fliplr(ylims)],m_colours(3,:),'edgecolor',m_colours(3,:));
 
-m_plot_1 = plot(t{1}(1,:),k{1}(1,:),'r.')%,'markersize',1);
-m_plot_2 = plot(t{2}(1,:),k{2}(1,:),'g.')%,'markersize',1);
-m_plot_3 = plot(t{3}(1,:),k{3}(1,:),'k.')%,'markersize',1);
+m_plot_1 = plot(t{1}(1,:),k{1}(1,:),'.','color',colours(1,:))%,'markersize',1);
+m_plot_2 = plot(t{2}(1,:),k{2}(1,:),'.','color',colours(2,:))%,'markersize',1);
+m_plot_3 = plot(t{3}(1,:),k{3}(1,:),'.','color',colours(3,:))%,'markersize',1);
 
 set(gca,'Xdir','reverse')
-for i = 500:4500
+for i = 500:1500
     
     set(m_plot_1,'YData',k{1}(i,:));
     set(m_plot_1,'XData',t{1}(i,:));
@@ -1568,13 +1571,17 @@ for i = 500:4500
     ylim(ylims)
     xlim([40,160])
     title(['Time:',num2str(i),' Mouse ',this_mouse{1}.name(end-2:end-1)])
-    drawnow;
-    %     Comment/ uncomment to make a video
-    %     img = getframe(gcf);
-    %     writeVideo(mp4obj,img);
+%     drawnow;
+%     %     Comment/ uncomment to make a video
+%         img = getframe(fig);
+%         writeVideo(mp4obj,getframe(fig));
+        
+    figinfo = hardcopy(fig,'-dzbuffer','-r0');
+    writeVideo(mp4obj, im2frame(figinfo));
+
 end
 
-% close(mp4obj)
+close(mp4obj)
 
 %% Plot average for all trials for a given mouse, using arrays generated above in movie loop
 % colours = [1,0,0;0,1,0;0,0,0];
