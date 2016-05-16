@@ -803,15 +803,18 @@ end
 
 %% Load data for an example animal/session
 
-% load ~/Dropbox/Data/3posdata/behav_36b.mat
-% load ~/Dropbox/Data/3posdata/behav_32.mat
+load ~/Dropbox/Data/3posdata/behav_32b.mat
+load ~/Dropbox/Data/3posdata/behav_33b.mat
+load ~/Dropbox/Data/3posdata/behav_34b.mat
+load ~/Dropbox/Data/3posdata/behav_36b.mat
+
 load ~/work/whiskfree/data/behav_32b.mat
 load ~/work/whiskfree/data/behav_33b.mat
 load ~/work/whiskfree/data/behav_34b.mat
 load ~/work/whiskfree/data/behav_36b.mat
 % load ~/work/whiskfree/data/behav_38.mat
 
-this_mouse = behav_32;
+this_mouse = behav_36;
 
 %% Image/plot whisker angle/curvature conditioned on trialtype/choice
 figure(1); clf;
@@ -1499,12 +1502,9 @@ for i = 2:4500
 end
 
 %% Code to make a movie
-<<<<<<< HEAD
 % data.savefile = '/media/mathew/Bigger Data1/whisker_movies/32_stim_by_time_deltaK';
 data.savefile = 'example_movie_2'
-=======
-data.savefile = '/media/mathew/Bigger Data1/whisker_movies/34_example';
->>>>>>> 5a071cac1d573469a5c6cb2a1146149b29364beb
+
 % New movie setup
 data.profile = 'Motion JPEG AVI'; % This is the default. Update mp4.Quality below to ensure best conversion quality possible (note setting quality to 100 increases files size from 37MB to 187MB)
 mp4obj = VideoWriter(data.savefile,data.profile);
@@ -1739,7 +1739,19 @@ title(this_mouse{s}.name)
 
 %% PCA of whisking. All trials then by trial type
 
+theta_data = [t{1}';t{2}';t{3}'];
 
+% [coeff,score,latent] = princomp(theta_data);
+labels = [ones(size(t{1},2),1);2*ones(size(t{2},2),1);3*ones(size(t{3},2),1)];
+mappedX = tsne(theta_data(:,500:2500),labels,2)
+
+%% Downsample with decimate before PCA
+theta_ds = zeros(size(theta_data,1),100);
+for i = 1:size(theta_data,1)
+    theta_ds(i,:) = decimate(theta_data(i,900:1890),10);
+end
+
+[coeff,score,latent] = princomp(theta_ds);
 
 %% Try subtracting torsion as mean kappa per theta outside contact.
 title(['Mouse ',this_mouse{1}.name(end-2:end),' rolling average trialtype difference (',num2str(win),' trials)'])
@@ -1749,5 +1761,47 @@ title(['Mouse ',this_mouse{1}.name(end-2:end),' rolling average trialtype differ
 %% Choice|Stimulus probability from theta/kappa over time.
 
 %% Is contact detection necessary? - Yes
+
+%% Export data to .csv for loading into python
+animal = {'behav_32';'behav_33';'behav_34';'behav_36'};
+
+clf;
+clear ax
+for a = 1:3;
+    this_mouse = eval(animal{a});
+    
+    
+    t = [];k = []; tt = []; ch = []; sess = [];
+    for s = 1:numel(this_mouse)
+        
+        v = 1:this_mouse{s}.sync;
+        
+        pu = this_mouse{s}.poleup(v);
+        if ~isempty(pu)
+            %             this_k = circshift(delta_k,1000-pu);
+            %             this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
+            t = [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
+            k = [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
+            
+            tt = [tt;this_mouse{s}.trialtype(v)]; % trialtype
+            ch = [ch;this_mouse{s}.choice(v)];    % choice
+            sess = [sess;s];
+        end
+        
+        
+    end
+    
+    % Print to .csv in data folder
+    csvwrite(['~/work/whiskfree/data/theta_',this_mouse{s}.name(end-2:end-1),'.csv'],t);
+    csvwrite(['~/work/whiskfree/data/kappa_',this_mouse{s}.name(end-2:end-1),'.csv'],k);
+    csvwrite(['~/work/whiskfree/data/trialtype_',this_mouse{s}.name(end-2:end-1),'.csv'],tt);
+    csvwrite(['~/work/whiskfree/data/choice_',this_mouse{s}.name(end-2:end-1),'.csv'],ch);
+    csvwrite(['~/work/whiskfree/data/session_',this_mouse{s}.name(end-2:end-1),'.csv'],sess);
+    
+    
+end
+
+
+
 
 
