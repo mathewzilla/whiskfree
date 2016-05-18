@@ -58,7 +58,7 @@ class LinkedView(plugins.PluginBase):
                       "idline": utils.get_id(line),
                       "data": linedata}
 
-fig, ax = plt.subplots(2)
+
 
 # scatter periods and amplitudes
 # np.random.seed(0)
@@ -78,6 +78,9 @@ Data loading and t-sne stuff
 from sklearn import manifold
 from sklearn.decomposition import PCA
 import random
+from scipy.signal import resample
+from sklearn.cluster import KMeans
+
 
 np.random.seed(0)
 theta = pd.read_csv('/Users/mathew/work/whiskfree/data/theta_36.csv',header=None)
@@ -85,18 +88,40 @@ kappa = pd.read_csv('/Users/mathew/work/whiskfree/data/kappa_36.csv',header=None
 tt = pd.read_csv('/Users/mathew/work/whiskfree/data/trialtype_36.csv',header=None)
 ch = pd.read_csv('/Users/mathew/work/whiskfree/data/choice_36.csv',header=None)
 
-Xpca_theta = PCA(n_components=30).fit_transform(theta.values.squeeze()[:,499:2499])
-Xpca_kappa = PCA(n_components=30).fit_transform(kappa.values.squeeze()[:,499:2499])
+# Xpca_theta = PCA(n_components=30).fit_transform(theta.values.squeeze()[:,499:2499])
+# Xpca_kappa = PCA(n_components=30).fit_transform(kappa.values.squeeze()[:,499:2499])
 
-tsne = manifold.TSNE(n_components=2,learning_rate=500,verbose=1,random_state=0)
+# resample, then remove mean of first 100ms
+
+theta_r = np.array([[resample(theta.values.squeeze()[i,900:1890],100)] for i in xrange(0,theta.shape[0])])
+# theta_r = theta_r.squeeze()
+# theta_dm = np.array([[theta_r[i] - np.mean(theta_r[i,0:10])] for i in xrange(0,theta_r.shape[0])])
+theta_dm = theta_r.squeeze()
+
+Xpca_theta = PCA(n_components=30).fit_transform(theta_dm)
+
+# tsne = manifold.TSNE(n_components=2,learning_rate=500,verbose=1,random_state=0)
 # mappedX_theta = tsne.fit_transform(Xpca_theta)
-mappedX_kappa = tsne.fit_transform(Xpca_theta)
 
-subset = random.sample(kappa.index, 200)
-x = np.linspace(500, 2499, 2000)
-data = np.array([[x,theta.values.squeeze()[si,499:2499]] for si in subset]) # data needs to be N by 2 x time (for x and y axes)
+kmeans = KMeans(9, random_state=8)
+Y_hat = kmeans.fit(Xpca_theta)
 
-points = ax[1].scatter(mappedX_kappa[subset,0],mappedX_kappa[subset,1],s = 100,c=tt.values[subset],alpha=0.5)
+
+subset = random.sample(theta.index, theta.shape[0])
+# x = np.linspace(500, 2499, 2000)
+x = np.linspace(900,1890,100)
+# data = np.array([[x,theta.values.squeeze()[si,499:2499]] for si in subset]) # data needs to be N by 2 x time (for x and y axes)
+data = np.array([[x,theta_dm[si]] for si in subset]) # data needs to be N by 2 x time (for x and y axes)
+
+
+fig, ax = plt.subplots(1,2,figsize = (12,12))
+
+ax[0] = plt.subplot2grid((3,3), (0, 0), colspan=3)
+ax[1] = plt.subplot2grid((3,3), (1, 0), colspan=3,rowspan=2)
+
+# points = ax[1].scatter(mappedX_theta[subset,0],mappedX_theta[subset,1],s = 100,c=Y_hat.labels_[subset],alpha=0.5)
+points = ax[1].scatter(Xpca_theta[subset,0],Xpca_theta[subset,1],s = 100,c=Y_hat.labels_[subset],alpha=0.5)
+
 ax[1].set_xlabel('t-sne dim 1')
 ax[1].set_ylabel('t-sne dim 2')
 
@@ -106,6 +131,7 @@ ax[1].set_ylabel('t-sne dim 2')
 lines = ax[0].plot(x, 0 * x, '-w', lw=3, alpha=0.5)
 # ax[0].set_ylim(-6e-3, 6e-3)
 ax[0].set_ylim(60,140)
+# ax[0].set_ylim(-10,70)
 
 ax[0].set_title("Mouse 36")
 
