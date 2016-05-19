@@ -130,6 +130,8 @@ subplot(1,6,[1:2]);
 imagesc(theta_data(:,900:1900))
 ylabel('Trial')
 xlabel('Time (ms)')
+set(gca,'Xticklabel',[1100,1300,1500,1700,1900])
+title('Unsorted')
 
 subplot(1,6,3);
 plot(tt,1:size(G,1));
@@ -139,6 +141,8 @@ xlabel('Trialtype')
 
 subplot(1,6,[4:5]);
 imagesc(theta_data(argsort(newG(:,2)),900:1900));
+set(gca,'Xticklabel',[1100,1300,1500,1700,1900])
+title('Sorted by cluster similarity')
 
 subplot(1,6,6);
 plot(sort(newG(:,2)),1:size(newG,1));
@@ -146,7 +150,8 @@ set(gca,'Ydir','reverse')
 ylim([1,size(G,1)])
 xlabel('Group')
 
-title('Downsampled whisker angle')
+
+suptitle(['Mouse ',this_mouse{1}.name(end-2:end-1),', Peri-touch whisker angle (pole up at 1000ms)'])
 %% Plot mean of each cluster in different colours. 
 % Looking for a better way of sorting the clusters
 clus = 12;
@@ -188,20 +193,48 @@ end
 
 subplot(1,6,[1:2]);
 imagesc(theta_ds)
+set(gca,'Xticklabel',[1100,1300,1500,1700,1900])
+ylabel('Trial')
+xlabel('Time (ms)')
+title('Unsorted')
 
 subplot(1,6,3);
 plot(tt,1:size(G,1));
 set(gca,'Ydir','reverse')
 ylim([1,size(G,1)])
+xlabel('Trialtype')
 
 subplot(1,6,[4:5]);
 imagesc(theta_ds(peakorder,:));
+set(gca,'Xticklabel',[1100,1300,1500,1700,1900])
+title('Sorted by group mean peak time')
 
 subplot(1,6,6);
 plot(sort(newestG(:,2)),1:size(newestG,1));
 set(gca,'Ydir','reverse')
 ylim([1,size(G,1)])
+xlabel('Group')
 
+suptitle(['Mouse ',this_mouse{1}.name(end-2:end-1),', Peri-touch whisker angle (pole up at 1000ms)'])
 
+%% Sort by linkage and plot dendogram at the side
+Z = linkage(score(:,1:40));
+subplot(1,5,1)
+[M,T,PERM] = dendrogram(Z,1000,'orientation','left');
+subplot(1,5,[2:5]);
+imagesc(theta_data(argsort(T),900:1900));
+suptitle(['Mouse ',this_mouse{1}.name(end-2:end-1),', Peri-touch whisker angle (pole up at 1000ms)'])
 
+%% Image sorted data + sorted corr matrix
+leaves = 0;
 
+[M,T,PERM] = dendrogram(Z,leaves,'orientation','left');
+subplot(1,2,1);
+imagesc(theta_data(argsort(T),900:1900));
+title(['Peri-touch whisker angle (pole up at 1000ms)'])
+
+subplot(1,2,2);
+imagesc(corrcoef(score(argsort(T),1:40)'))
+title(['PCC score vectors (sorted)'])
+
+suptitle(['Mouse ',this_mouse{1}.name(end-2:end-1),'. Max leaf nodes:',num2str(leaves)])
