@@ -226,7 +226,7 @@ imagesc(theta_data(argsort(T),900:1900));
 suptitle(['Mouse ',this_mouse{1}.name(end-2:end-1),', Peri-touch whisker angle (pole up at 1000ms)'])
 
 %% Image sorted data + sorted corr matrix
-leaves = 0;
+leaves = 500;
 
 [M,T,PERM] = dendrogram(Z,leaves,'orientation','left');
 subplot(1,2,1);

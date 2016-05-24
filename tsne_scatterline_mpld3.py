@@ -122,8 +122,12 @@ ax[1] = plt.subplot2grid((3,3), (1, 0), colspan=3,rowspan=2)
 # points = ax[1].scatter(mappedX_theta[subset,0],mappedX_theta[subset,1],s = 100,c=Y_hat.labels_[subset],alpha=0.5)
 points = ax[1].scatter(Xpca_theta[subset,0],Xpca_theta[subset,1],s = 100,c=Y_hat.labels_[subset],alpha=0.5)
 
-ax[1].set_xlabel('t-sne dim 1')
-ax[1].set_ylabel('t-sne dim 2')
+ax[1].set_xlabel('PC 1')
+ax[1].set_ylabel('PC 2')
+
+ax[0].set_xlabel('Time (ms)')
+ax[0].set_ylabel('Angle (degrees)')
+
 
 
 
@@ -133,10 +137,11 @@ lines = ax[0].plot(x, 0 * x, '-w', lw=3, alpha=0.5)
 ax[0].set_ylim(60,140)
 # ax[0].set_ylim(-10,70)
 
-ax[0].set_title("Mouse 36")
+ax[0].set_title("Hover your mouse over the scatter plot to see that trial's timeseries")
 
 # transpose line data and add plugin
 linedata = data.transpose(0, 2, 1).tolist()
 plugins.connect(fig, LinkedView(points, lines[0], linedata))
 
+mpld3.save_html(fig,'tsne_mpld3.html')
 mpld3.show()
