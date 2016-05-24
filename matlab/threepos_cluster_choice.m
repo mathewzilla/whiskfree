@@ -19,21 +19,31 @@ titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
 
 %% Downsample theta and kappa with decimate
 
-theta_ds = zeros(size(t,1),50);
-kappa_ds = zeros(size(t,1),50);
+theta_ds = zeros(size(t,1),100);
+kappa_ds = zeros(size(t,1),100);
 for i = 1:size(t,1)
-    theta_ds(i,:) = decimate(t(i,1000:1490),10);
-    kappa_ds(i,:) = decimate(k(i,1000:1490),10);
-    kappa_ds(i,:) = kappa_ds(i,:) - mean(kappa_ds(i,1:10)); % mean subtract kappa
+    theta_ds(i,:) = decimate(t(i,900:1890),10); %decimate(t(i,1000:1490),10);
+    kappa_ds(i,:) = decimate(t(i,900:1890),10);
+%     kappa_ds(i,:) = kappa_ds(i,:) - mean(kappa_ds(i,1:10)); % mean subtract kappa
 end
 
 both_ds = [zscore(theta_ds),zscore(kappa_ds)];
-%% PCA
-[coeff_t,score_t,latent_t] = princomp(zscore(theta_ds));
 
-[coeff_k,score_k,latent_k] = princomp(zscore(kappa_ds));
+%% PCA (rotating matrix to find time points of highest variance.
+% Plot SCORES to see timeseries of high variance components
+[coeff_t,score_t,latent_t] = princomp(zscore(theta_ds)');
 
-[coeff_b,score_b,latent_b] = princomp(both_ds);
+[coeff_k,score_k,latent_k] = princomp(zscore(kappa_ds)');
+
+[coeff_b,score_b,latent_b] = princomp(both_ds');
+
+%% PCA with COV and eig
+C = cov(theta_ds');
+[V,D] = eig(C);
+
+% Get eigenvalues by diag(D)
+
+%% Plots
 
 subplot(1,3,1);
 imagesc(coeff_t);
@@ -99,7 +109,7 @@ legend('Theta','Kappa','Both')
 title(['Cumulative variance explained by PCs, Mouse 36'])
 
 %% Compute mean score vector for each class
-score_dr = [score_t(:,1:10),score_k(:,1:10)];
+score_dr = [score_t(:,1:15),score_k(:,1:15)];
 
 
 mean_l = score_dr(find(lab.ch == 1),:);
