@@ -22,13 +22,15 @@ titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
 theta_ds = zeros(size(t,1),100);
 kappa_ds = zeros(size(t,1),100);
 for i = 1:size(t,1)
-    theta_ds(i,:) = decimate(t(i,900:1890),10); %decimate(t(i,1000:1490),10);
-    kappa_ds(i,:) = decimate(t(i,900:1890),10);
+    theta_ds(i,:) = decimate(t(i,1000:1490),10); % decimate(t(i,900:1890),10); %
+    kappa_ds(i,:) = decimate(k(i,1000:1490),10); % decimate(k(i,900:1890),10);
 %     kappa_ds(i,:) = kappa_ds(i,:) - mean(kappa_ds(i,1:10)); % mean subtract kappa
 end
 
 both_ds = [zscore(theta_ds),zscore(kappa_ds)];
-%% PCA (rotating matrix to f
+
+%% PCA (rotating matrix to find time points of highest variance.
+% Plot SCORES to see timeseries of high variance components
 [coeff_t,score_t,latent_t] = princomp(zscore(theta_ds)');
 
 [coeff_k,score_k,latent_k] = princomp(zscore(kappa_ds)');
@@ -36,9 +38,32 @@ both_ds = [zscore(theta_ds),zscore(kappa_ds)];
 [coeff_b,score_b,latent_b] = princomp(both_ds');
 
 %% PCA with COV and eig
-C = cov(theta_ds);
-[V,D] = eig(C);
+C = cov(theta_ds');
+[V,D] = eig(C); % Get eigenvalues by diag(D)
+E = diag(D);
+[E, order] = sort(E,'descend');
+D = D(order,order);
+V = V(:,order);
 
+pc = V'*theta_ds ./ size(theta_ds,1);
+plot(pc(1,:))
+
+%% Plot V' * theta_ds(lick left) vs V' * theta_ds(lick right)
+p = find(lab.ch == 1);
+a = find(lab.ch == 2);
+
+x1 = (V(p,1)'*theta_ds(p,:))./numel(p);
+x2 = (V(a,1)'*theta_ds(a,:))./numel(a);
+
+y1 = (V(p,2)'*theta_ds(p,:))./numel(p);
+y2 = (V(a,2)'*theta_ds(a,:))./numel(a);
+
+clf;
+plot(x1,y1); hold all
+plot(x2,y2);
+
+%% use eigs to only compute 2 pcs
+[V2,D2] = eigs(C,2);
 
 
 %% Plots

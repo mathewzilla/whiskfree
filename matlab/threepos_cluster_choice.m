@@ -19,11 +19,11 @@ titles = {'Posterior pole';'Anterior pole';'No Go'}; % 36
 
 %% Downsample theta and kappa with decimate
 
-theta_ds = zeros(size(t,1),100);
-kappa_ds = zeros(size(t,1),100);
+theta_ds = zeros(size(t,1),50);
+kappa_ds = zeros(size(t,1),50);
 for i = 1:size(t,1)
-    theta_ds(i,:) = decimate(t(i,900:1890),10); %decimate(t(i,1000:1490),10);
-    kappa_ds(i,:) = decimate(t(i,900:1890),10);
+    theta_ds(i,:) = decimate(t(i,950:1440),10); % decimate(t(i,900:1890),10); %
+    kappa_ds(i,:) = decimate(k(i,950:1440),10); % decimate(k(i,900:1890),10);
 %     kappa_ds(i,:) = kappa_ds(i,:) - mean(kappa_ds(i,1:10)); % mean subtract kappa
 end
 
@@ -38,50 +38,60 @@ both_ds = [zscore(theta_ds),zscore(kappa_ds)];
 [coeff_b,score_b,latent_b] = princomp(both_ds');
 
 %% PCA with COV and eig
-C = cov(theta_ds');
-[V,D] = eig(C);
+C = cov(theta_ds'); % C is then n x n
+[V,D] = eig(C); % Eigenvectors and associated eigenvalues
+E = diag(D); % Get eigenvalues by diag(D)
+[E, order] = sort(E,'descend');
+D = D(order,order);
+V = V(:,order);
 
-% Get eigenvalues by diag(D)
+pc = V'*theta_ds ./ size(theta_ds,1);
+plot(pc(1,:))
 
-%% Plots
+%% Plot V' * theta_ds(lick left) vs V' * theta_ds(lick right)
+p = find(lab.ch == 1);
+a = find(lab.ch == 2);
 
-subplot(1,3,1);
-imagesc(coeff_t);
-axis square
-title('Theta')
-subplot(1,3,2);
-imagesc(coeff_k);
-axis square
-title('Kappa')
-subplot(1,3,3);
-imagesc(coeff_b);
-axis square
-title('Both')
-% colorbar
+x1 = (V(p,2)'*theta_ds(p,:))./numel(p);
+x2 = (V(a,2)'*theta_ds(a,:))./numel(a);
 
-%% Image of theta and kappa separately, and when fit together
+y1 = (V(p,3)'*theta_ds(p,:))./numel(p);
+y2 = (V(a,3)'*theta_ds(a,:))./numel(a);
+
 clf;
+plot(x1,y1); hold all
+plot(x2,y2); hold off
+
+%% use eigs to compute a small number of pcs
+[V2,D2] = eigs(C,20);
+W = theta_ds' * V2;
+Y = W*V2';
+
 subplot(1,2,1);
-imagesc([coeff_t;coeff_k]); axis square
-title('Theta and Kappa separately')
+plot(Y(:,1:5))
 subplot(1,2,2);
-imagesc(coeff_b(:,1:50)); axis square
-title('Theta and Kappa together')
-suptitle('Eigenvectors')
+plot(theta_ds(1:5,:)')
+
+
+
+%% Need summary plot of data| PCs to see if separation exists for linear class
+
+%% Try more focussed method based on what PCA says i.e. theta/kappa in particular time window.
+
 
 %% Plot first 10 PCs, staggered
 clf
 for i = 1:10;
     subplot(1,4,1);
-    plot(i+ coeff_t(:,i));
+    plot(10*i+ score_t(:,i));
     hold all
     
     subplot(1,4,2);
-        plot(i+ coeff_k(:,i));
+        plot(10*i+ score_k(:,i));
     hold all
     
     subplot(1,4,[3,4])
-        plot(0.4*i+ coeff_b(:,i));
+        plot(10*i+ score_b(:,i));
     hold all
     
 end
