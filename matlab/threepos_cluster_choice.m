@@ -175,10 +175,10 @@ resp = [zeros(size(p));ones(size(a))];
 resp = resp>0.5; % needs to be logical
 
 % Predict using kappa alone
-% pred = [kappa_ds(p,:);kappa_ds(a,:)];
+pred = [kappa_ds(p,:);kappa_ds(a,:)];
 % pred = [theta_ds(p,:);theta_ds(a,:)];
 % pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
-pred = [V_b(1:20,p),V_b(1:20,a)]';
+% pred = [V_b(1:20,p),V_b(1:20,a)]';
 
 % GLM - logistic regression
 tic
