@@ -144,11 +144,11 @@ p = find(lab.ch == 1);
 a = find(lab.ch == 2);
 
 % Need better way to normalise
-x1 = (V(p,2)'*theta_ds(p,:))./numel(p);
-x2 = (V(a,2)'*theta_ds(a,:))./numel(a);
+x1 = (V(p,2)'*theta_ds(p,:));%./numel(p);
+x2 = (V(a,2)'*theta_ds(a,:));%./numel(a);
 
-y1 = (V(p,3)'*theta_ds(p,:))./numel(p);
-y2 = (V(a,3)'*theta_ds(a,:))./numel(a);
+y1 = (V(p,3)'*theta_ds(p,:));%./numel(p);
+y2 = (V(a,3)'*theta_ds(a,:));%./numel(a);
 
 clf;
 plot(x1,y1); hold all
@@ -175,15 +175,20 @@ resp = [zeros(size(p));ones(size(a))];
 resp = resp>0.5; % needs to be logical
 
 % Predict using kappa alone
-pred = [kappa_ds(p,:);kappa_ds(a,:)];
+% pred = [kappa_ds(p,:);kappa_ds(a,:)];
 % pred = [theta_ds(p,:);theta_ds(a,:)];
-% pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
+pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
 % pred = [V_b(1:20,p),V_b(1:20,a)]';
 
 % GLM - logistic regression
 tic
+% new matlab
 mdl = fitglm(pred,resp,'Distribution','binomial','Link','logit');
 score_log = mdl.Fitted.Probability; % Probability estimates
+
+% old matlab
+mdl = glmfit(pred,resp,'binomial');  
+score_log = glmval(mdl,pred,'logit');
 time_log = toc
 
 [Xlog,Ylog,Tlog,AUClog] = perfcurve(resp,score_log,'true');
