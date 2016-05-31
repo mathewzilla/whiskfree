@@ -1763,6 +1763,7 @@ title(['Mouse ',this_mouse{1}.name(end-2:end),' rolling average trialtype differ
 %% Is contact detection necessary? - Yes
 
 %% Export data to .csv for loading into python
+% load ~/Dropbox/Data/3posdata/behav_34b.mat
 animal = {'behav_32';'behav_33';'behav_34';'behav_36'};
 
 clf;
