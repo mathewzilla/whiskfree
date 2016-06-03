@@ -1768,7 +1768,7 @@ animal = {'behav_32';'behav_33';'behav_34';'behav_36'};
 
 clf;
 clear ax
-for a = 1:3;
+for a = 4;
     this_mouse = eval(animal{a});
     
     
