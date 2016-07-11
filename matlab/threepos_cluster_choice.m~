@@ -204,6 +204,9 @@ plot(Y(:,1:5));
 title(['Reconstruction, (',num2str(dims),' PCs)'])
 
 %% classification to choice/trialtype using perfcurve examples
+% p = find(lab.tt == 1);
+% a = find(lab.tt == 2);
+
 p = find(lab.tt == 1);
 a = find(lab.tt == 2);
 
@@ -211,9 +214,9 @@ resp = [zeros(size(p));ones(size(a))];
 resp = resp>0.5; % needs to be logical
 
 % Predict using kappa alone
-pred = [kappa_ds(p,:);kappa_ds(a,:)];
+% pred = [kappa_ds(p,:);kappa_ds(a,:)];
 % pred = [theta_ds(p,:);theta_ds(a,:)];
-% pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
+pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
 % pred = [V_b(1:20,p),V_b(1:20,a)]';
 
 % GLM - logistic regression
@@ -236,7 +239,8 @@ AUClog
 % Predict using SVM
 tic
 mdlSVM = fitcsvm(pred,resp,'Standardize',true);
-mdlSVM = fitPosterior(mdlSVM);
+% mdlSVM = fitPosterior(mdlSVM);
+cv = crossval(svm);
 [~,score_svm] = resubPredict(mdlSVM);
 time_svm = toc
 
@@ -260,17 +264,20 @@ plot(Xnb,Ynb)
 axis square
 
 
-% Compute and plot the mouse's ROC curve
-mouse_score = [1-[lab.ch(p) == lab.tt(p)];[lab.ch(a) == lab.tt(a)]];
-[Xm,Ym,Tm,AUCm] = perfcurve(resp,mouse_score,'true');
-plot(Xm,Ym);
+% % Compute and plot the mouse's ROC curve
+% mouse_score = [1-[lab.ch(p) == lab.tt(p)];[lab.ch(a) == lab.tt(a)]];
+% [Xm,Ym,Tm,AUCm] = perfcurve(resp,mouse_score,'true');
+% plot(Xm,Ym);
 
-legend(['Logistic regression:',num2str(AUClog)],['SVM:',num2str(AUCsvm)],['Naive Bayes: ',num2str(AUCnb)],['Mouse: ',num2str(AUCm)],'location','best')
+legend(['Logistic regression:',num2str(AUClog)],['SVM:',num2str(AUCsvm)],['Naive Bayes: ',num2str(AUCnb)],'location','best')%['Mouse: ',num2str(AUCm)],'location','best')
 xlabel('False positive'); ylabel('True positive')
-title('ROC curves, 3 methods, trialtype, kappa') ; % 20 PCs')
+title('ROC curves, 3 methods, choice, alldata') ; % 20 PCs')
 hold off
 
-% print('-dpng',['~/work/whiskfree/figs/classification/ROC_alldata_alltime_',this_mouse{1}.name(end-2:end-1),'.png'])
+print('-dpng',['~/work/whiskfree/figs/classification/ROC_alldata_alltime_CHOICE_',this_mouse{1}.name(end-2:end-1),'.png'])
+
+%% Confusion matrices of the different methods (and mouse).
+
 
 %% Run in a loop, computing AUC for 50ms chunks of raw data
 p = find(lab.tt == 1);
@@ -282,6 +289,7 @@ resp = resp>0.5; % needs to be logical
 clf; 
 subplot(1,2,1);
 hold all
+cmap = hsv(10);
 for i = 1:10
     t_range = 900 + i*50: 900 + i*50 + 49;
     % Predict using kappa alone
@@ -306,7 +314,11 @@ legend(num2str([(1:10)*50 + 925]'))
 
 subplot(1,2,2);
 plot([(1:10)*50 + 925]',AUC); hold all
-plot([1000,1000],[0.5,1],'k--')
+plot([1000,1000],[0.65,0.9],'k--');hold off
+
+%% Single layer neural network with 3 output choices
+% Code output as one-hot vector
+
 
 %% Need summary plot of data| PCs to see if separation exists for linear class
 

@@ -204,16 +204,19 @@ plot(Y(:,1:5));
 title(['Reconstruction, (',num2str(dims),' PCs)'])
 
 %% classification to choice/trialtype using perfcurve examples
-p = find(lab.tt == 1);
-a = find(lab.tt == 2);
+% p = find(lab.tt == 1);
+% a = find(lab.tt == 2);
+
+p = find(lab.ch == 1);
+a = find(lab.ch == 2);
 
 resp = [zeros(size(p));ones(size(a))];
 resp = resp>0.5; % needs to be logical
 
 % Predict using kappa alone
-pred = [kappa_ds(p,:);kappa_ds(a,:)];
+% pred = [kappa_ds(p,:);kappa_ds(a,:)];
 % pred = [theta_ds(p,:);theta_ds(a,:)];
-% pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
+pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
 % pred = [V_b(1:20,p),V_b(1:20,a)]';
 
 % GLM - logistic regression
@@ -237,7 +240,9 @@ AUClog
 tic
 mdlSVM = fitcsvm(pred,resp,'Standardize',true);
 mdlSVM = fitPosterior(mdlSVM);
+% cv = crossval(mdlSVM);
 [~,score_svm] = resubPredict(mdlSVM);
+% [~,score] = kfoldPredict(cv);
 time_svm = toc
 
 [Xsvm,Ysvm,Tsvm,AUCsvm] = perfcurve(resp,score_svm(:,mdlSVM.ClassNames),'true');
@@ -260,17 +265,17 @@ plot(Xnb,Ynb)
 axis square
 
 
-% Compute and plot the mouse's ROC curve
-mouse_score = [1-[lab.ch(p) == lab.tt(p)];[lab.ch(a) == lab.tt(a)]];
-[Xm,Ym,Tm,AUCm] = perfcurve(resp,mouse_score,'true');
-plot(Xm,Ym);
+% % Compute and plot the mouse's ROC curve
+% mouse_score = [1-[lab.ch(p) == lab.tt(p)];[lab.ch(a) == lab.tt(a)]];
+% [Xm,Ym,Tm,AUCm] = perfcurve(resp,mouse_score,'true');
+% plot(Xm,Ym);
 
-legend(['Logistic regression:',num2str(AUClog)],['SVM:',num2str(AUCsvm)],['Naive Bayes: ',num2str(AUCnb)],['Mouse: ',num2str(AUCm)],'location','best')
+legend(['Logistic regression:',num2str(AUClog)],['SVM:',num2str(AUCsvm)],['Naive Bayes: ',num2str(AUCnb)],'location','best')%['Mouse: ',num2str(AUCm)],'location','best')
 xlabel('False positive'); ylabel('True positive')
-title('ROC curves, 3 methods, trialtype, kappa') ; % 20 PCs')
+title('ROC curves, 3 methods, choice, alldata') ; % 20 PCs')
 hold off
 
-% print('-dpng',['~/work/whiskfree/figs/classification/ROC_alldata_alltime_',this_mouse{1}.name(end-2:end-1),'.png'])
+print('-dpng',['~/work/whiskfree/figs/classification/ROC_alldata_alltime_CHOICE_',this_mouse{1}.name(end-2:end-1),'.png'])
 
 %% Confusion matrices of the different methods (and mouse).
 
@@ -320,5 +325,54 @@ plot([1000,1000],[0.65,0.9],'k--');hold off
 
 %% Try more focussed method based on what PCA says i.e. theta/kappa in particular time window.
 
+%% Export resp and pred for analysis elsewhere
+% load ~/Dropbox/Data/3posdata/behav_32b.mat
+% load ~/Dropbox/Data/3posdata/behav_33b.mat
+% load ~/Dropbox/Data/3posdata/behav_34b.mat
+% load ~/Dropbox/Data/3posdata/behav_36b.mat
 
+mouse = {'behav_32','behav_33','behav_34','behav_36'};
+
+for m = 1:4;
+    
+    this_mouse = eval(mouse{m});
+    
+    % this_mouse = behav_32;
+    % colours = [0,1,0;1,0,0;0,0,0]; % Others
+    % m_colours = [0.5,1,0.5;1,0.5,0.5;0.5,0.5,0.5]; % Others
+    % titles = {'Anterior pole';'Posterior pole';'No Go'}; % Others
+    
+    % Generate t and k arrays
+    [t,k,lab] = gen_tk(this_mouse,'all');
+    
+    % Downsample theta and kappa with decimate
+    
+    theta_ds = zeros(size(t,1),50);
+    kappa_ds = zeros(size(t,1),50);
+    for i = 1:size(t,1)
+        theta_ds(i,:) = decimate(t(i,950:1440),10); % decimate(t(i,900:1890),10); %
+        kappa_ds(i,:) = decimate(k(i,950:1440),10); % decimate(k(i,900:1890),10);
+        %     kappa_ds(i,:) = kappa_ds(i,:) - mean(kappa_ds(i,1:10)); % mean subtract kappa
+    end
+    
+    both_ds = [zscore(theta_ds),zscore(kappa_ds)];
+    
+    
+    p = find(lab.ch == 1);
+    a = find(lab.ch == 2);
+    
+    resp = [zeros(size(p));ones(size(a))];
+    resp = resp>0.5; % needs to be logical
+    
+    % Predict using kappa alone
+    % pred = [kappa_ds(p,:);kappa_ds(a,:)];
+    % pred = [theta_ds(p,:);theta_ds(a,:)];
+    pred = [theta_ds(p,:),kappa_ds(p,:);theta_ds(a,:),kappa_ds(a,:)];
+    
+    
+    % Print to .csv in data folder
+    csvwrite(['~/work/whiskfree/data/pred_',this_mouse{1}.name(end-2:end-1),'.csv'],pred);
+    csvwrite(['~/work/whiskfree/data/resp_',this_mouse{1}.name(end-2:end-1),'.csv'],resp);
+    
+end
 
