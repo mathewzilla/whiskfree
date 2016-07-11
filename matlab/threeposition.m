@@ -1763,33 +1763,59 @@ title(['Mouse ',this_mouse{1}.name(end-2:end),' rolling average trialtype differ
 %% Is contact detection necessary? - Yes
 
 %% Export data to .csv for loading into python
-% load ~/Dropbox/Data/3posdata/behav_34b.mat
+load ~/Dropbox/Data/3posdata/behav_32b.mat
+load ~/Dropbox/Data/3posdata/behav_33b.mat
+load ~/Dropbox/Data/3posdata/behav_34b.mat
+load ~/Dropbox/Data/3posdata/behav_36b.mat
 animal = {'behav_32';'behav_33';'behav_34';'behav_36'};
 
 clf;
 clear ax
-for a = 4;
+for a = 1:3;
     this_mouse = eval(animal{a});
     
     
     t = [];k = []; tt = []; ch = []; sess = [];
+% BAD CODE. NO NOT USE
+%     for s = 1:numel(this_mouse)
+%         
+%         v = 1:this_mouse{s}.sync;
+%         
+%         pu = this_mouse{s}.poleup(v);
+%         if ~isempty(pu)
+%             %             this_k = circshift(delta_k,1000-pu);
+%             %             this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
+%             t = [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
+%             k = [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
+%             
+%             tt = [tt;this_mouse{s}.trialtype(v)]; % trialtype
+%             ch = [ch;this_mouse{s}.choice(v)];    % choice
+%             sess = [sess;s];
+%         end
+%         
+%         
+%     end
+
     for s = 1:numel(this_mouse)
-        
         v = 1:this_mouse{s}.sync;
         
         pu = this_mouse{s}.poleup(v);
         if ~isempty(pu)
-            %             this_k = circshift(delta_k,1000-pu);
-            %             this_t = circshift(this_mouse{s}.theta(v(tt(ct)),:)',1000-pu);
-            t = [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
-            k = [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
+            t2 = zeros(numel(v),5000);
+            k2 = zeros(numel(v),5000);
+            for j = 1:numel(pu)
+                t2(j,:) = circshift(this_mouse{s}.theta(v(j),:),[1,1000-pu(j)]);
+                k2(j,:) = circshift(this_mouse{s}.kappa(v(j),:),[1,1000-pu(j)]);
+            end
+            
+            t = [t;t2]; % [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
+            k = [k;k2]; % [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
             
             tt = [tt;this_mouse{s}.trialtype(v)]; % trialtype
             ch = [ch;this_mouse{s}.choice(v)];    % choice
-            sess = [sess;s];
+            sess = [sess;s*ones(numel(pu),1)];    % session
+            
         end
-        
-        
     end
     
     % Print to .csv in data folder
