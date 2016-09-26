@@ -64,7 +64,9 @@ xlabel('Whisker angle')
 ylabel('Whisker curvature')
 
 
-%% One loop to load each trial with touches, compute first touch time, and whether pro/ret
+%% REVISE: One loop to load each trial with touches, compute first touch time, angle at touch/ kappa during touch (max kappa within 100ms of first touch)
+
+
 ff = dir('*_touch.mat');
 
 for i = 1:numel(ff);
@@ -145,106 +147,12 @@ ylim([0,1])
 
 %% Load touch_params (named here, in a loop eventually)
 
+% 32
 % Load session/ AB data to determine AB trials
 session_data = csvread('~/work/whiskfree/data/session_32_r.csv');
 AB_data = csvread('~/work/whiskfree/data/AB_32_r.csv');
 
-% Touch_params. Column 4: touch detection done Y/N. Column 15: touch type (0-none,1-pro,2-ret);
-
-pro_ret = [];
-tt = [];
-ch =[];
-
-% Session 1
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_010415_32a.csv');
-s = find(session_data == 1);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 2
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_020415_32a.csv');
-s = find(session_data == 2);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 4
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_170415_32a.csv');
-s = find(session_data == 4);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(:,4));
-tracked(1:14) = []; % hacky
-pro_ret = [pro_ret; touch_data(tracked,15)];
-tt = [tt; touch_data(tracked,3)];
-ch = [ch; touch_data(tracked,14)];
-
-% Session 3
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_160415_32a.csv');
-s = find(session_data == 3);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 5
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_180215_32a.csv');
-s = find(session_data == 5);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 6
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_190215_32a.csv');
-s = find(session_data == 6);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 7
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_200415_32a.csv');
-s = find(session_data == 7);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 8
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_210415_32a.csv');
-s = find(session_data == 8);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
-
-% Session 9
-touch_data = csvread('~/Dropbox/Data/3posdata/touch_params/touch_params_220415_32a.csv');
-s = find(session_data == 9);
-ab = find(AB_data(s));
-
-tracked = find(touch_data(ab,4));
-pro_ret = [pro_ret; touch_data(ab(tracked),15)];
-tt = [tt; touch_data(ab(tracked),3)];
-ch = [ch; touch_data(ab(tracked),14)];
+[pro_ret,tt,ch,track_id] = organise_touch_32;
 
 %% Swap tt 1 and 2 to make order posterior, anterior, no go. (for 32,33 and 34)
 %  Swap pro_ret order to be retraction, protraction, no touch.
@@ -276,7 +184,7 @@ for i = 1:3;
     sigma = std(pro_ret(find(tt==i)))./ sqrt(numel(find(tt==i)));
     numel(find(tt==i));
     
-    errorbar(i,mu,sigma,'color',colours(i,:))
+    errorbar(i,mu,sigma,'color',colours(i,:),'Linewidth',2)
 end
 
 set(gca,'XTick',[1,2,3],'XTickLabel',{'Posterior','Anterior','No Go'})
@@ -324,6 +232,22 @@ legend('Posterior','Anterior','No Go')
 set(gca,'XTick',[1,2,3],'XTickLabel',{'Retraction','Protraction','No Touch'})
 
 title('Touch type histogram (+ jitter) | trial type')
+
+%% Stacked bar/stairs with just 3 columns
+clf
+clear b x
+for i = 1:3;
+    [b(i,:),x(i,:)] = hist(pro_ret(find(tt==i)),[1,2,3]);
+end
+h = bar(x',b,'stacked')
+
+for i = 1:3;
+    set(h(i),'facecolor',colours(i,:))
+end
+legend('Retraction','Protraction','No Touch')
+set(gca,'XTick',[1,2,3],'XTickLabel',{'Posterior','Anterior','No Go'})
+
+title('Touch type stacked histogram | trial type')
 
 %% Confusion matrix w/touch info - 1: trialtype and choice by touch type
 
@@ -433,7 +357,7 @@ end
 
 tcp = reshape(tt_ch_pr,9,3);
 
-clf
+
 figure;
 cm_3r = reshape(cm_3,9,3);
 imagesc(cm_3r);
@@ -472,6 +396,6 @@ plot(touch_data(:,3)+1,'k','linewidth',2)
 axis off
 
 %% Write data out to file for pythonic stuff
-csvwrite(['~/work/whiskfree/data/proret_32_subset_sorted.csv'],pro_ret);
-csvwrite(['~/work/whiskfree/data/tt_32_subset_sorted.csv'],tt);
-csvwrite(['~/work/whiskfree/data/ch_32_subset_sorted.csv'],ch);
+csvwrite(['~/work/whiskfree/data/proret_36_subset_sorted.csv'],pro_ret);
+csvwrite(['~/work/whiskfree/data/tt_36_subset_sorted.csv'],tt);
+csvwrite(['~/work/whiskfree/data/ch_36_subset_sorted.csv'],ch);
