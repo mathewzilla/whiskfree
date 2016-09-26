@@ -107,38 +107,149 @@ clear behav_36 meta_36
 
 
 %% Load data, parse into 'on' and 'AB' sections for analysis
+% Note done 32, 36
+% (33 has missing policy data, 34 only has 2 tracked sessions)
+load ~/Dropbox/Data/3posdata/behav_36b.mat
+load ~/Dropbox/Data/3posdata/meta_36.mat
 
-find(strcmp(session_data.policy,'AB'),1,'first')
+this_mouse = behav_36;
+meta = meta_36;
 
-    t = [];
-    k = [];
-    for s = 1:numel(this_mouse)
-        v = 1:this_mouse{s}.sync;
-        
-        pu = this_mouse{s}.poleup(v);
-        if ~isempty(pu)
-            t2 = zeros(numel(v),5000);
-            k2 = zeros(numel(v),5000);
-            for j = 1:numel(pu)
-                t2(j,:) = circshift(this_mouse{s}.theta(v(j),:),[1,1000-pu(j)]);
-                k2(j,:) = circshift(this_mouse{s}.kappa(v(j),:),[1,1000-pu(j)]);
-            end
-            
-            t = [t;t2]; % [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
-            k = [k;k2]; % [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
-            
-            tt = [tt;this_mouse{s}.trialtype(v)]; % trialtype
-            ch = [ch;this_mouse{s}.choice(v)];    % choice
-            sess = [sess;s*ones(numel(pu),1)];            % session
+t = [];
+k = [];
+tt = [];
+ch = [];
+sess = [];
+AB = [];
+for s = 1:numel(meta)
+    v = 1:min([this_mouse{s}.sync,numel(meta{s}.policy)]);
+    
+    
+    pu = this_mouse{s}.poleup(v);
+    if ~isempty(pu)
+        t2 = zeros(numel(v),5000);
+        k2 = zeros(numel(v),5000);
+        for j = 1:numel(pu)
+            t2(j,:) = circshift(this_mouse{s}.theta(v(j),:),[1,1000-pu(j)]);
+            k2(j,:) = circshift(this_mouse{s}.kappa(v(j),:),[1,1000-pu(j)]);
         end
+        
+        t = [t;t2]; % [t;circshift(this_mouse{s}.theta(v,:)',1000-pu)'];
+        k = [k;k2]; % [k;circshift(this_mouse{s}.kappa(v,:)',1000-pu)'];
+        
+        tt = [tt;this_mouse{s}.trialtype(v)]; % trialtype
+        ch = [ch;this_mouse{s}.choice(v)];    % choice
+        sess = [sess;s*ones(numel(pu),1)];            % session
+        AB = [AB;strcmp(meta{s}.policy(v),'AB')'];
     end
 end
 
-labels.tt = tt;
-labels.ch = ch;
-labels.sess = sess;
 
 
+csvwrite(['~/work/whiskfree/data/theta_',this_mouse{s}.name(end-2:end-1),'_r.csv'],t);
+csvwrite(['~/work/whiskfree/data/kappa_',this_mouse{s}.name(end-2:end-1),'_r.csv'],k);
+csvwrite(['~/work/whiskfree/data/trialtype_',this_mouse{s}.name(end-2:end-1),'_r.csv'],tt);
+csvwrite(['~/work/whiskfree/data/choice_',this_mouse{s}.name(end-2:end-1),'_r.csv'],ch);
+csvwrite(['~/work/whiskfree/data/session_',this_mouse{s}.name(end-2:end-1),'_r.csv'],sess);
+csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],AB);
+
+
+%% Load, record and save lick times
+
+month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+
+
+load ~/Dropbox/Data/3posdata/behav_32b.mat
+
+for i = 7:numel(behav_32)
+    date_str = behav_32{i}.name; % dir_str(end-20:end-11);
+    display(['Processing session ',date_str])
+    mouse = date_str(8:10);
+    d = date_str(1:2);
+    y = date_str(5:6);
+    m_num = str2num(date_str(3:4));
+    
+    % Determine month name
+    m = month_names{m_num};
+
+    filestring = ['/run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk,share=flsrss$/snapped/replicated/Petersen/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
+    cd (filestring);
+
+    numtrials = numel(dir) - 3; % All files apart from ., .., and _session_data
+    
+    licktimes = zeros(numtrials,2);
+    for j = 1:numtrials
+        this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
+        ll = find(this_data.read.lickleft,1,'first');
+        lr = find(this_data.read.lickright,1,'first');
+        if ll
+            licktimes(j,1) =  ll/sfz;
+        end
+        if lr
+            licktimes(j,2) =  lr/sfz;
+        end
+    end
+    
+    licktimes = ceil(1000*licktimes);
+    
+    licks_36{i} = licktimes;
+end
+
+save ~/Dropbox/Data/3posdata/licks_36.mat licks_36
+
+%% Example: Load raw behaviour data to determine lick times. Sampling rate = 24414.0625Hz
+
+sfz = 24414.0625; % 25000 % 
+
+for j = 198%40:numtrials
+    this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
+    
+    % Plot some stuff
+    clf;
+    ax(1) = subplot(2,2,1);
+    plot(this_data.read.piezoleft); hold all
+    plot(this_data.read.piezoright);
+    legend('piezoleft','piezoright')
+    ax(2) = subplot(2,2,2);
+    plot(this_data.read.lickleft); hold all
+    plot(this_data.read.lickright)
+    title([num2str(find(this_data.read.lickleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickright,1,'first')/sfz)])
+    legend('lickleft','lickright')
+    ax(3) = subplot(2,2,3);
+    plot(this_data.read.lickvalveleft); hold all
+    plot(this_data.read.lickvalveright);
+    title([num2str(find(this_data.read.lickvalveleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickvalveright,1,'first')/sfz)])
+    legend('lickvalveleft','lickvalveright')
+    ax(4) = subplot(2,2,4);
+    plot(this_data.read.resp); hold all;
+    plot(this_data.read.airpuffvalve); 
+    plot(this_data.read.drink);
+    plot(this_data.read.timeout);
+    title([num2str(find(this_data.read.resp,1,'first')/sfz),', ',num2str(find(this_data.read.drink,1,'first')/sfz),', ',num2str(find(this_data.read.timeout,1,'first')/sfz)])
+    legend('resp','airpuffvalve','drink','timeout')
+    
+    suptitle(['Trial ',num2str(j),' trialtype ',num2str(this_data.read.trialtype)])
+    drawnow;
+    linkaxes(ax,'x')
+    pause(0.2);
+end
+
+%% Variables of interest re lick times are lickvalveleft/right and
+% drink/timeout
+licktimes = zeros(numtrials,2);
+for j = 1:numtrials
+    this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
+    ll = find(this_data.read.lickleft,1,'first');
+    lr = find(this_data.read.lickright,1,'first');
+    if ll
+        licktimes(j,1) =  ll/sfz;
+    end
+    if lr
+        licktimes(j,2) =  lr/sfz;
+    end
+end
+
+licktimes = ceil(licktimes * 1000);
 
 
 
