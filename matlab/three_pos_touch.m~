@@ -17,14 +17,7 @@ save ~/work/whiskfree/data/touch_36.mat touch_36
 save ~/Dropbox/Data/3posdata/touch_36.mat touch_36
 
 
-%% Load touches and first_touch variables from remote data folders, and append behav_*.mat
-for i = [1:7,9,10,13]
-    for j = 1:numel(behav_36{i}.trial)
-        trial = behav_36{i}.trial(j)
-        filename = [behav_36{i}.path,'/',num2str(behav_36{i}.trial(j))]
-            load(filename,'protraction_touch','first_touch','pro_ret');
-            end
-            end
+%% Load 
 
 %% Compute first touch time, angle at touch/ kappa during touch (max kappa within 100ms of first touch)
 % use touch_*, behav_* and meta_* structures computed in threepos_behavdata.m or

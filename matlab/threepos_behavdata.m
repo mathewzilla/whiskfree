@@ -156,7 +156,7 @@ csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],
 
 %% Load, record and save lick times.
 % To process more mice, change the mouse number
-% DONE: 36
+% DONE: 36, 32
 
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
 
