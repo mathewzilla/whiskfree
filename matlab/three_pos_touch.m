@@ -155,7 +155,7 @@ AB_data = csvread('~/work/whiskfree/data/AB_32_r.csv');
 [pro_ret,tt,ch,track_id] = organise_touch_32;
 
 %% Swap tt 1 and 2 to make order posterior, anterior, no go. (for 32,33 and 34)
-%  Swap pro_ret order to be retraction, protraction, no touch.
+%  Swap pro_ret order to be retraction, protraction, no touch. (all mice).
 tt_temp = tt;
 tt_temp(find(tt == 1)) = 2;
 tt_temp(find(tt == 2)) = 1;
@@ -221,9 +221,9 @@ title('Touch type stacked histogram (+ jitter) | trial type')
 
 %% Stairs plot
 figure();
-clear b x
+% clear b x
 for i = 1:3;
-    [b(i,:),x(i,:)] = hist(pro_ret(find(tt==i))+0.25*randn(numel(find(tt==i)),1),linspace(0,4,40));
+%     [b(i,:),x(i,:)] = hist(pro_ret(find(tt==i))+0.25*randn(numel(find(tt==i)),1),linspace(0,4,40));
     stairs(x(i,:),b(i,:),'color',colours(i,:),'linewidth',2);
     hold all
 end
