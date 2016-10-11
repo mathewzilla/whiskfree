@@ -55,9 +55,9 @@ save ~/Dropbox/Data/3posdata/meta_33.mat meta_33
 
 clear behav_33 meta_33
 
-% 34
+%% 34
 % Load data structure
-load ~/Dropbox/Data/3posdata/behav_34b.mat
+load ~/Dropbox/Data/3posdata/behav_34c.mat
 for i = 1:numel(behav_34);
     date_str = behav_34{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
@@ -78,9 +78,9 @@ end
 save ~/work/whiskfree/data/meta_34.mat meta_34
 save ~/Dropbox/Data/3posdata/meta_34.mat meta_34
 
-clear behav_34 meta_34
+% clear behav_34 meta_34
 
-% 36
+%% 36
 % Load data structure
 load ~/Dropbox/Data/3posdata/behav_36b.mat
 for i = 1:numel(behav_36);
@@ -156,15 +156,15 @@ csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],
 
 %% Load, record and save lick times.
 % To process more mice, change the mouse number
-% DONE: 36, 32
+% DONE: 36, 32, 34
 
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+sfz = 24414.0625; % 25000 % 
 
+load ~/Dropbox/Data/3posdata/behav_34c.mat
 
-load ~/Dropbox/Data/3posdata/behav_32b.mat
-
-for i = 1:numel(behav_32)
-    date_str = behav_32{i}.name; % dir_str(end-20:end-11);
+for i = 1:numel(behav_34)
+    date_str = behav_34{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
     mouse = date_str(8:10);
     d = date_str(1:2);
@@ -194,10 +194,10 @@ for i = 1:numel(behav_32)
     
     licktimes = ceil(1000*licktimes);
     
-    licks_32{i} = licktimes;
+    licks_34{i} = licktimes;
 end
 
-save ~/Dropbox/Data/3posdata/licks_32.mat licks_32
+save ~/Dropbox/Data/3posdata/licks_34.mat licks_34
 
 %% Example: Load raw behaviour data to determine lick times. Sampling rate = 24414.0625Hz
 

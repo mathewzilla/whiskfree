@@ -5,26 +5,77 @@
 %% Load/save touch_params into a touch_*.mat array
 % Loop to go into data folders
 
-% 36
-load ~/Dropbox/Data/3posdata/behav_36b.mat
+% Done: 32,36
+load ~/Dropbox/Data/3posdata/behav_34c.mat
 
-for i = [1:7,9,10,13]
-    touch_data = load([behav_36{i}.path,'/touch_params.csv']);
-    touch_36{i} = touch_data;
+for i = [1:2,4:11]
+    touch_data = load([behav_34{i}.path,'/touch_params.csv']);
+    touch_34{i} = touch_data;
 end
 
-save ~/work/whiskfree/data/touch_36.mat touch_36
-save ~/Dropbox/Data/3posdata/touch_36.mat touch_36
+save ~/work/whiskfree/data/touch_34.mat touch_34
+save ~/Dropbox/Data/3posdata/touch_34.mat touch_34
 
+
+%% 
+load ~/Dropbox/Data/3posdata/behav_34c.mat
+load ~/Dropbox/Data/3posdata/touch_34.mat
+this_mouse = behav_34;
+this_touch = touch_34;
 
 %% Load touches and first_touch variables from remote data folders, and append behav_*.mat
-for i = [1:7,9,10,13]
-    for j = 1:numel(behav_36{i}.trial)
-        trial = behav_36{i}.trial(j)
-        filename = [behav_36{i}.path,'/',num2str(behav_36{i}.trial(j))]
-            load(filename,'protraction_touch','first_touch','pro_ret');
-            end
-            end
+for i = [10:11]; % 32: 1:9. 34: 1:2,4:11. 36: 1:7,9,10,13. 
+    touch_params = this_touch{i};
+    
+    tracked = zeros(size(this_mouse{i}.trial));
+    pro_tch = zeros(size(this_mouse{i}.trial));
+    first_tch = zeros(size(this_mouse{i}.trial));
+    tch = zeros(numel(this_mouse{i}.trial),5000);
+    pro_ret_array = zeros(numel(this_mouse{i}.trial),5000);
+    
+    j = 0;
+    %%
+    for j = j+1:numel(this_mouse{i}.trial)
+        trial = this_mouse{i}.trial(j)
+        
+        trial_num = find(touch_params(:,2) == trial);
+        
+        if touch_params(trial_num,4); % if tracked
+            
+            tracked(j) = 1;
+            
+            date_str = this_mouse{i}.name; % dir_str(end-20:end-11);
+            mouse = date_str(8:10);
+            d = date_str(1:2);
+            y = date_str(5:6);
+            m = date_str(3:4);
+            
+            filename = [this_mouse{i}.path,'/',this_mouse{i}.name,'_20',y,m,d,'_',num2str(this_mouse{i}.trial(j)),'_touch.mat'];
+            load(filename,'touches','protraction_touch','first_touch','pro_ret');
+            
+            touches = [circshift(touches,[0,-this_mouse{i}.startframe(j)]),zeros(1,5000-numel(touches))];
+            pro_ret = [circshift(pro_ret,[0,-this_mouse{i}.startframe(j)]),zeros(1,5000-numel(pro_ret))];
+            tch(j,:) = touches;
+            pro_ret_array(j,:) = pro_ret;
+            
+            first_tch(j) = first_touch;
+            pro_tch(j) = protraction_touch;
+            
+            
+            
+            
+        end
+    end
+    this_mouse{i}.tracked = tracked;
+    this_mouse{i}.touches = tch;
+    this_mouse{i}.first_touch = first_tch;
+    this_mouse{i}.pro_touch = pro_tch;
+    this_mouse{i}.pro_ret = pro_ret_array;
+end
+%%
+behav_34 = this_mouse;
+save ~/work/whiskfree/data/behav_34t.mat behav_34
+save ~/Dropbox/Data/3posdata/behav_34t.mat behav_34
 
 %% Compute first touch time, angle at touch/ kappa during touch (max kappa within 100ms of first touch)
 % use touch_*, behav_* and meta_* structures computed in threepos_behavdata.m or

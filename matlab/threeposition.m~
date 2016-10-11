@@ -432,10 +432,9 @@ end
 % 
 % Unsynced exceptions
 behav_34{2}.sync = 168;
-behav_34{3}.sync = 0;
-behav_34{4}.sync = 163;
-behav_34{5}.sync = 110;
-behav_34{6}.sync = 159;
+behav_34{4}.sync = 193;
+% behav_34{7}.sync = 132;
+% behav_34{10}.sync = 130;
 
 save ~/work/whiskfree/data/behav_34c.mat behav_34
 
