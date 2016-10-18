@@ -14,6 +14,7 @@ mouse_name='TH14a';
 % session = ['240415_',mouse_name];
 session = ['02_09_15_',mouse_name];
 ret=0;
+% vid = ['20',session(5:6),session(3:4),session(1:2)];
 vid =['20',session(7:8),session(4:5),session(1:2)];
 
 %CHANGE

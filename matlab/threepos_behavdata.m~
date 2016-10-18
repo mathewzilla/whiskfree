@@ -22,9 +22,6 @@ for i = 1:numel(behav_32);
     
     % Behaviour files are formatted like behaviour_38a_16-Jul-2015_session_data.mat
     load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
-    
-    % resync? i = 7,10,11
-    
     meta_32{i} = session_data;
 end
 
@@ -33,7 +30,7 @@ save ~/Dropbox/Data/3posdata/meta_32.mat meta_32
 
 clear behav_32 meta_32
 
-%% 33
+% 33
 % Load data structure
 load ~/Dropbox/Data/3posdata/behav_33b.mat
 for i = 1:numel(behav_33);
@@ -87,7 +84,7 @@ save ~/Dropbox/Data/3posdata/meta_34.mat meta_34
 % Load data structure
 load ~/Dropbox/Data/3posdata/behav_36b.mat
 for i = 1:numel(behav_36);
-    date_str = behav_36{i}.name;% dir_str(end-20:end-11);
+    d % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
     mouse = date_str(8:10);
     d = date_str(1:2);
