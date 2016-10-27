@@ -23,9 +23,16 @@ for i = 1:numel(behav_32);
     % Behaviour files are formatted like behaviour_38a_16-Jul-2015_session_data.mat
     load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
     
+    trial_id = 1:numel(behav_32{i}.trial);
+    % Load resynced trial_id for 7 ,10, 11
+    if (i==7 || i==10 || i==11)
+    load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/resync_trials_',date_str])
+    end
     % resync? i = 7,10,11
+    session_data.trial_id = trial_id;
     
     meta_32{i} = session_data;
+    
 end
 
 save ~/work/whiskfree/data/meta_32.mat meta_32
