@@ -18,6 +18,19 @@ touch = eval(['touch_',num2str(mouse)]);
 
 % Load session/ AB data to determine AB trials
 
+% % debugging trialtype
+% for i = 1:numel(meta);
+%     dur = min([behav{i}.sync,numel(meta{i}.policy)]);
+%     ttb = behav{i}.trialtype;
+%     ttb(find(ttb==3)) = 0;
+%     clf;
+%     plot(meta{i}.trialtype(1:dur));
+%     hold all;
+%     plot(ttb(1:dur));
+%     title(i);
+%     pause;
+% end
+
 
 % Touch_params. Column 4: touch detection done Y/N. Column 15: touch type (0-none,1-pro,2-ret);
 
