@@ -67,8 +67,7 @@ clear behav_33 meta_33
 
 %% 34
 % Load data structure
-% load ~/Dropbox/Data/3posdata/behav_34c.mat
-load ~/work/whiskfree/data/behav_34c.mat
+load ~/Dropbox/Data/3posdata/behav_34c.mat
 for i = 1:numel(behav_34);
     date_str = behav_34{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
@@ -91,37 +90,9 @@ save ~/Dropbox/Data/3posdata/meta_34.mat meta_34
 
 % clear behav_34 meta_34
 
-%% Attempt to load single-trial policy meta data. Save into arrays.
-% NB policy data is MISSING for old sessions
-
-month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+%% Load single-trial meta data. Save into arrays. 
 
 
-for i = [1,2,4,5]
-    
-    cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/behavior_test_rsp
-    
-    date_str = behav_34{i}.name;
-    mouse = date_str(8:10);
-    d = date_str(1:2);
-    y = date_str(5:6);
-    m_num = str2num(date_str(3:4));
-    
-    % Determine month name
-    m = month_names{m_num};
-    
-    cd([d,'-',m,'-20',y]);
-    cd(mouse)
-    
-    files = dir('*.mat');
-    for j = 1:numel(files) - 1
-        load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat'])
-        
-    end
-    
-    
-    
-end
 
 %% 36
 % Load data structure
@@ -277,8 +248,8 @@ save ~/Dropbox/Data/3posdata/licks_36.mat licks_36
 
 sfz = 24414.0625; % 25000 % 
 
-for j = 181:210 %25:numtrials
-    this_data = load([filestring,'behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
+for j = 50 %25:numtrials
+    this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
     
     % Plot some stuff
     clf;

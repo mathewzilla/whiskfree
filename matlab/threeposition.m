@@ -308,7 +308,7 @@ save ~/work/whiskfree/data/behav_33b.mat behav_33
 clear behav_34
 
 % dates = [30,34]; % {'161214_34a','171214_34a'};
-dates = [30,34,23,24,27,25,28,31,35,54,56]; % 11.10.16. {'161214_34a','171214_34a','121214_34a','121214_34b','151214_34a','130215_34a,...
+dates = [30,34,23,24,27,25,28,31,35,54,56,22,26]; % 11.10.16. {'161214_34a','171214_34a','121214_34a','121214_34b','151214_34a','130215_34a,...
                                                         % '160215_34a','170215_34a','180215_34a','250215_34a','260215_34a'};
 
 % To track (11.10.16):
@@ -434,8 +434,9 @@ end
 behav_34{2}.sync = 168;
 behav_34{3}.sync = 0;
 behav_34{4}.sync = 163;
-behav_34{5}.sync = 110;
+behav_34{5}.sync = 109;
 behav_34{6}.sync = 159;
+% 7 -13 ok
 
 save ~/work/whiskfree/data/behav_34c.mat behav_34
 
@@ -508,7 +509,6 @@ for i = 1:numel(dates);
                 barPos(j,:) = bp';
                 drawnow;
                 
-                
             catch
                 display(['Something was wrong with file',var_files(j).name])
                 kappa(j,:) = zeros(1,5000);
@@ -577,7 +577,8 @@ save ~/work/whiskfree/data/behav_36b.mat behav_36
 %% 38
 clear behav_38
 
-dates = [29,34,38,41,49,52,58,8,12,15,37,46,56,9,10,13,21]%,60,64,67,68];
+% dates = [29,34,38,41,49,52,58,6,8,12,15,37,46,56,67,9,10,13,21];%,60,64,67,68];
+dates = [58,6,8,12,46,56,67,10,13,21]; % Touch detected sessions
 % To track:
 % On trials:
 % Bad sessions:
@@ -624,7 +625,7 @@ for i = 1:numel(dates);
             startframes(j) = xls_info(trial_num,3);
             poleup(j) = xls_info(trial_num,4);
             try
-                load(var_files(j).name,'kappa_w','theta_w');
+                load(var_files(j).name,'kappa_w','theta_w','r_base');
                 kappa_w = [circshift(kappa_w,[0,-startframes(j)]),zeros(1,5000-numel(kappa_w))];
                 theta_w = [circshift(theta_w,[0,-startframes(j)]),zeros(1,5000-numel(theta_w))];
                 kappa(j,:) = kappa_w;
@@ -672,6 +673,7 @@ for i = 1:numel(dates);
             poleup(j) = 0;
             barPos(j,:) = [0,0];
         end
+       
     end
     
     behav_38{i}.kappa = kappa;
@@ -706,7 +708,7 @@ end
 % behav_38{7}.sync = 132;
 % behav_38{10}.sync = 130;
 
-save ~/work/whiskfree/data/behav_38.mat behav_38
+% save ~/work/whiskfree/data/behav_38b.mat behav_38
 
 %% NOTE: More data is ready for tracking on Isilon for 32,33 and 34
 
@@ -773,7 +775,7 @@ end
 % Add file loading if needed
 % load ~/work/whiskfree/data/behav_38b.mat
 % load ~/work/whiskfree/data/example_frame frame
-this_mouse = behav_34;
+this_mouse = behav_38;
 
 % First check barPos makes sense
 for s = 1:numel(this_mouse)

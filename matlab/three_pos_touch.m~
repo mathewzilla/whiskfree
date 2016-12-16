@@ -191,11 +191,11 @@ end
 
 
 %% Image of whisker theta to identify sessions to re-track.
-load ~/Dropbox/Data/3posdata/behav_38t.mat
-this_mouse = behav_38;
+load ~/Dropbox/Data/3posdata/behav_32t.mat
+this_mouse = behav_32;
 for i = 1:numel(this_mouse)
     imagesc(this_mouse{i}.theta)
-    title(['Session: ',num2str(i),this_mouse{i}.name])
+    title(this_mouse{i}.name
     pause
 end
 
