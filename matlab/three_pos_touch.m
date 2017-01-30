@@ -5,26 +5,27 @@
 %% Load/save touch_params into a touch_*.mat array
 % Loop to go into data folders
 
-% Done: 32,36
-load ~/Dropbox/Data/3posdata/behav_34c.mat
+% Done: 32,33, 36, 34, 38.
+% load ~/Dropbox/Data/3posdata/behav_34c.mat
+load ~/work/whiskfree/data/behav_33b.mat
 
-for i = [1:2,4:11]
+for i = [1:2,4:13]
     touch_data = load([behav_34{i}.path,'/touch_params.csv']);
     touch_34{i} = touch_data;
 end
 
 save ~/work/whiskfree/data/touch_34.mat touch_34
-save ~/Dropbox/Data/3posdata/touch_34.mat touch_34
+% save ~/Dropbox/Data/3posdata/touch_33.mat touch_33
 
 
 %% 
-load ~/Dropbox/Data/3posdata/behav_34c.mat
-load ~/Dropbox/Data/3posdata/touch_34.mat
-this_mouse = behav_34;
-this_touch = touch_34;
+load ~/Dropbox/Data/3posdata/behav_33b.mat
+load ~/Dropbox/Data/3posdata/touch_33.mat
+this_mouse = behav_38;
+this_touch = touch_38;
 
 %% Load touches and first_touch variables from remote data folders, and append behav_*.mat
-for i = [10:11]; % 32: 1:9. 34: 1:2,4:11. 36: 1:7,9,10,13. 
+for i = [12:13]; % 32: 1:9. 33: 1:3,6. 34: 1:2,4:13. 36: 1:7,9,10,13. 38: 1:10;
     touch_params = this_touch{i};
     
     tracked = zeros(size(this_mouse{i}.trial));
@@ -76,6 +77,127 @@ end
 behav_34 = this_mouse;
 save ~/work/whiskfree/data/behav_34t.mat behav_34
 save ~/Dropbox/Data/3posdata/behav_34t.mat behav_34
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fixing stuff Dec 2016 %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Work out how many AB trials have been tracked
+load ~/work/whiskfree/data/meta_34.mat
+load ~/work/whiskfree/data/behav_34t.mat
+this_mouse = behav_34;
+% this_touch = touch_38;
+this_meta = meta_34;
+
+tracked_all = 0;
+tracked_AB = 0;
+for i = [12:13]; % 32: 1:9. 33: 1:3,6. 34: 1:2,4:11. 36: 1:7,9,10,13. 38: 1:10;
+    policy = strcmp(this_meta{i}.policy,'AB')';
+    tt_m = this_meta{i}.trialtype;
+    
+    tracked = this_mouse{i}.tracked;
+    tt_b = this_mouse{i}.trialtype;
+    tracked_all = tracked_all + sum(tracked);
+    tracked_AB = tracked_AB + sum(ismember(find(tracked),find(policy)));
+end
+tracked_all
+tracked_AB
+
+%% Make array of pole-up times for tracked files
+%  Load goodness of fit values.
+%% 
+load ~/Dropbox/Data/3posdata/behav_32t.mat
+load ~/Dropbox/Data/3posdata/touch_32.mat
+this_mouse = behav_32;
+this_touch = touch_32;
+%%
+for i = 1:2,4:13; % 32: 1:9. 33: 1:3,6. 34: 1:2,4:13. 36: 1:7,9,10,13. 38: 1:10;
+    touch_params = this_touch{i};
+    
+    tracked = zeros(size(this_mouse{i}.trial));
+
+    gof_array = zeros(numel(this_mouse{i}.trial),5000);
+    
+    j = 0;
+    %%
+    for j = j+1:numel(this_mouse{i}.trial)
+        trial = this_mouse{i}.trial(j)
+        
+        trial_num = find(touch_params(:,2) == trial);
+        
+        if touch_params(trial_num,4); % if tracked
+            
+            tracked(j) = 1;
+            
+            date_str = this_mouse{i}.name; % dir_str(end-20:end-11);
+            mouse = date_str(8:10);
+            d = date_str(1:2);
+            y = date_str(5:6);
+            m = date_str(3:4);
+            
+            filename = [this_mouse{i}.path,'/',this_mouse{i}.name,'_20',y,m,d,'_',num2str(this_mouse{i}.trial(j)),'_touch.mat'];
+            load(filename,'gof');
+            
+            gof = [circshift(gof,[0,-this_mouse{i}.startframe(j)]),zeros(1,5000-numel(gof))];
+            gof_array(j,:) = gof;
+        end
+    end
+    this_mouse{i}.gof = gof_array;
+end
+
+%% DEV code - Imageplot of gof
+
+for i = 1:9;imagesc(this_mouse{i}.gof(find(this_mouse{i}.tracked),:));pause;end  % One line image plot, original order
+
+% Look only at correct trials, arranged by trial type
+for i = 1:9;
+    % Trialtype
+    tt1 = find(this_mouse{i}.trialtype == 1); tt1 = tt1(ismember(tt1,find(this_mouse{i}.tracked)));
+    tt2 = find(this_mouse{i}.trialtype == 2); tt2 = tt2(ismember(tt2,find(this_mouse{i}.tracked)));
+    tt3 = find(this_mouse{i}.trialtype == 3); tt3 = tt3(ismember(tt3,find(this_mouse{i}.tracked)));
+    
+    % Choice
+    ch1 = find(this_mouse{i}.choice == 1); ch1 = ch1(ismember(ch1,find(this_mouse{i}.tracked)));
+    ch2 = find(this_mouse{i}.choice == 2); ch2 = ch2(ismember(ch2,find(this_mouse{i}.tracked)));
+    ch3 = find(this_mouse{i}.choice == 3); ch3 = ch3(ismember(ch3,find(this_mouse{i}.tracked)));
+    
+    % Correct trials
+    c1 = tt1(ismember(tt1,ch1));
+    c2 = tt2(ismember(tt2,ch2));
+    c3 = tt3(ismember(tt3,ch3));
+    
+    clf
+    for j = 1:numel(c1)
+        plot(-j*100 + this_mouse{i}.gof(c1(j),:)); hold all
+    end
+    clf
+    for j = 1:numel(c2)
+        plot(-j*100 + this_mouse{i}.gof(c2(j),:)); hold all
+    end
+    clf
+    for j = 1:numel(c3)
+        plot(-j*100 + this_mouse{i}.gof(c3(j),:)); hold all
+    end
+    
+    indeces = [ones(size(c1')),50*ones(size(c2')),100*ones(size(c3'))];
+    clf
+    imagesc(this_mouse{i}.gof([c1',c2',c3'],[1000:1500,4000:4500]))
+    hold all
+    plot(-indeces,1:numel(indeces))
+    xlim([-100,1000])
+    pause
+end
+
+
+%% Image of whisker theta to identify sessions to re-track.
+load ~/Dropbox/Data/3posdata/behav_38t.mat
+this_mouse = behav_38;
+for i = 1:numel(this_mouse)
+    imagesc(this_mouse{i}.theta)
+    title(['Session: ',num2str(i),this_mouse{i}.name])
+    pause
+end
 
 %% Compute first touch time, angle at touch/ kappa during touch (max kappa within 100ms of first touch)
 % use touch_*, behav_* and meta_* structures computed in threepos_behavdata.m or

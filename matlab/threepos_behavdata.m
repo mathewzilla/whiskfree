@@ -67,7 +67,8 @@ clear behav_33 meta_33
 
 %% 34
 % Load data structure
-load ~/Dropbox/Data/3posdata/behav_34c.mat
+% load ~/Dropbox/Data/3posdata/behav_34c.mat
+load ~/work/whiskfree/data/behav_34c.mat
 for i = 1:numel(behav_34);
     date_str = behav_34{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
@@ -89,6 +90,38 @@ save ~/work/whiskfree/data/meta_34.mat meta_34
 save ~/Dropbox/Data/3posdata/meta_34.mat meta_34
 
 % clear behav_34 meta_34
+
+%% Attempt to load single-trial policy meta data. Save into arrays.
+% NB policy data is MISSING for old sessions
+
+month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+
+
+for i = [1,2,4,5]
+    
+    cd /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/behavior_test_rsp
+    
+    date_str = behav_34{i}.name;
+    mouse = date_str(8:10);
+    d = date_str(1:2);
+    y = date_str(5:6);
+    m_num = str2num(date_str(3:4));
+    
+    % Determine month name
+    m = month_names{m_num};
+    
+    cd([d,'-',m,'-20',y]);
+    cd(mouse)
+    
+    files = dir('*.mat');
+    for j = 1:numel(files) - 1
+        load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat'])
+        
+    end
+    
+    
+    
+end
 
 %% 36
 % Load data structure
@@ -118,15 +151,43 @@ save ~/Dropbox/Data/3posdata/meta_36.mat meta_36
 
 clear behav_36 meta_36
 
+%% 38
+% Load data structure
+load ~/work/whiskfree/data/behav_38b.mat
+for i = 1:numel(behav_38);
+    date_str = behav_38{i}.name;% dir_str(end-20:end-11);
+    display(['Processing session ',date_str])
+    mouse = date_str(8:10);
+    d = date_str(1:2);
+    y = date_str(5:6);
+    m_num = str2num(date_str(3:4));
+    
+    % Determine month name
+    m = month_names{m_num};
+    
+    % Behaviour files are formatted like behaviour_38a_16-Jul-2015_session_data.mat
+    load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
+    load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/resync_trials_',date_str])
+    
+    session_data.trial_id = trial_id;
+    meta_38{i} = session_data;
+
+end
+
+save ~/work/whiskfree/data/meta_38.mat meta_38
+save ~/Dropbox/Data/3posdata/meta_38.mat meta_38
+
+% clear behav_36 meta_36
+
 
 %% Load data, parse into 'on' and 'AB' sections for analysis
-% Note done 32, 36
+% Note done 32, 36, 38
 % (33 has missing policy data, 34 only has 2 tracked sessions)
-load ~/Dropbox/Data/3posdata/behav_36b.mat
-load ~/Dropbox/Data/3posdata/meta_36.mat
+load ~/Dropbox/Data/3posdata/behav_38b.mat
+load ~/Dropbox/Data/3posdata/meta_38.mat
 
-this_mouse = behav_36;
-meta = meta_36;
+this_mouse = behav_38;
+meta = meta_38;
 
 t = [];
 k = [];
@@ -174,10 +235,10 @@ csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
 sfz = 24414.0625; % 25000 % 
 
-load ~/Dropbox/Data/3posdata/behav_34c.mat
+load ~/Dropbox/Data/3posdata/behav_36t.mat
 
-for i = 1:numel(behav_34)
-    date_str = behav_34{i}.name; % dir_str(end-20:end-11);
+for i = 7:numel(behav_36)
+    date_str = behav_36{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
     mouse = date_str(8:10);
     d = date_str(1:2);
@@ -207,46 +268,52 @@ for i = 1:numel(behav_34)
     
     licktimes = ceil(1000*licktimes);
     
-    licks_34{i} = licktimes;
+    licks_36{i} = licktimes;
 end
 
-save ~/Dropbox/Data/3posdata/licks_34.mat licks_34
+save ~/Dropbox/Data/3posdata/licks_36.mat licks_36
 
 %% Example: Load raw behaviour data to determine lick times. Sampling rate = 24414.0625Hz
 
 sfz = 24414.0625; % 25000 % 
 
-for j = 198%40:numtrials
-    this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
+for j = 181:210 %25:numtrials
+    this_data = load([filestring,'behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
     
     % Plot some stuff
     clf;
+    xrange = [1:200000]/sfz;
+    
     ax(1) = subplot(2,2,1);
-    plot(this_data.read.piezoleft); hold all
-    plot(this_data.read.piezoright);
+    plot(xrange,this_data.read.piezoleft); hold all
+    plot(xrange,this_data.read.piezoright);
+    xlim([0,5])
     legend('piezoleft','piezoright')
     ax(2) = subplot(2,2,2);
-    plot(this_data.read.lickleft); hold all
-    plot(this_data.read.lickright)
+    plot(xrange,this_data.read.lickleft); hold all
+    plot(xrange,this_data.read.lickright)
     title([num2str(find(this_data.read.lickleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickright,1,'first')/sfz)])
+    xlim([0,5])
     legend('lickleft','lickright')
     ax(3) = subplot(2,2,3);
-    plot(this_data.read.lickvalveleft); hold all
-    plot(this_data.read.lickvalveright);
+    plot(xrange,this_data.read.lickvalveleft); hold all
+    plot(xrange,this_data.read.lickvalveright);
     title([num2str(find(this_data.read.lickvalveleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickvalveright,1,'first')/sfz)])
+    xlim([0,5])
     legend('lickvalveleft','lickvalveright')
     ax(4) = subplot(2,2,4);
-    plot(this_data.read.resp); hold all;
-    plot(this_data.read.airpuffvalve); 
-    plot(this_data.read.drink);
-    plot(this_data.read.timeout);
+    plot(xrange,this_data.read.resp); hold all;
+    plot(xrange,this_data.read.airpuffvalve); 
+    plot(xrange,this_data.read.drink);
+    plot(xrange,this_data.read.timeout);
     title([num2str(find(this_data.read.resp,1,'first')/sfz),', ',num2str(find(this_data.read.drink,1,'first')/sfz),', ',num2str(find(this_data.read.timeout,1,'first')/sfz)])
+    xlim([0,5])
     legend('resp','airpuffvalve','drink','timeout')
     
     suptitle(['Trial ',num2str(j),' trialtype ',num2str(this_data.read.trialtype)])
     drawnow;
     linkaxes(ax,'x')
-    pause(0.2);
+    pause;%(0.2);
 end
 
 %% Variables of interest re lick times are lickvalveleft/right and
