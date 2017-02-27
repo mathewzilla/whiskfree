@@ -6,8 +6,13 @@
 % Directory paths to these locations are:
 % NAS_path = /run/user/1000/gvfs/smb-share:server=130.88.94.172',share=test'/Dario/Behavioral_movies/
 % Isilon_path = /run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk',share=flsrss$/snapped/replicated/Petersen'/Dario' Campagner'/BEHAVIORAL' MOVIES'/
-% Data for the following dates are in these locations (as detailed in NAS_path/tracking_list.xls):
 %
+% UPDATED UBUNTU MOUNT PATH Jan 2017
+% NAS_path = /mnt/NAS1/Dario/Behavioral_movies/
+% Isilon_path = /mnt/Isilon/fls/Dario' Campagner'/BEHAVIORAL' MOVIES'/
+%
+%
+% Data for the following dates are in these locations (as detailed in NAS_path/tracking_list.xls):
 % 32/ Performance summary?:
 %     NAS:18-19.02, 27-31.03, 01-03.04, 10.04, 16-17.04, 20-24.04, 27.04
 %     Isilon: 28.04 - 01.05

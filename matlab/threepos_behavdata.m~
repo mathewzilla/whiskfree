@@ -360,6 +360,6 @@ lick_choice(find(l{i}(:,1))) = 1;
 lick_choice(find(l{i}(:,2))) = 2;
 
 % Fix late licks
-lick_choice([find(l{i}(:,1) > 2500);find(l{i}(:,2) > 2500)]) = 3;
+lick_choice([find(l{i}(:,1) > 2500);find(l{i}(:,2) > 2500)]
 
 
