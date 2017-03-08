@@ -457,12 +457,12 @@ for i = 1:5
     for j = 1:numel(Threepos{i}.behav)
         clf;
         undropped = find(Threepos{i}.behav{j}.dropped == 0);
-        tid = Threepos{i}.behav{j}.trial_id(undropped);
+        tid = Threepos{i}.behav{j}.trial_id(undropped)
         for t = 1:3;
             tt = find(Threepos{i}.behav{j}.trialtype(undropped) == t);
-            plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)));
+            plot(tt,Threepos{i}.meta{j}.pole_location(undropped(tt),1));
             hold all
-            plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)),'k.');
+            plot(tt,Threepos{i}.behav{j}.barPos(undropped(tt),1),'k.');
             
         end
         title(['Mouse ',Threepos{i}.behav{j}.name(end-2:end-1),' Session ',num2str(j),' (',Threepos{i}.behav{j}.name(1:6),')'])
