@@ -139,9 +139,9 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 % Re-tracked sessions:
 % 32: 1:3,5:8. 33: 1:3,6. 34: 1:2,4:11. 36: 1:7,9,10. 38: 1:10;
 tracked_sess = zeros(5,13);
-tracked_sess(1,[1:3,5:8]) = 1;
+tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[1,2,4:11]) = 1;
+tracked_sess(3,[5,1,2,6,8:13]) = 1;%tracked_sess(3,[1,2,4:11]) = 1;
 % % Dropping bad sessions
 % tracked_sess(1,[1:3,5:7]) = 1;
 % tracked_sess(2,[2:3,6]) = 1;
@@ -166,8 +166,8 @@ tracked_AB = zeros(5,1);
 
 for i = 1:5;
     load(['~/Dropbox/Data/3posdata/meta_',num2str(a(i)),'.mat']);
-    load(['~/Dropbox/Data/3posdata/behav_',num2str(a(i)),'t.mat']);
-    this_mouse = eval(['behav_',num2str(a(i))]);
+%     load(['~/Dropbox/Data/3posdata/behav_',num2str(a(i)),'t.mat']);
+%     this_mouse = eval(['behav_',num2str(a(i))]);
     % this_touch = touch_38;
     this_meta = eval(['meta_',num2str(a(i))]);
     
@@ -175,7 +175,7 @@ for i = 1:5;
     
     for j = 1:numel(t_id)
         % Conditional for sessions without policy in
-        if (i==2 && t_id(j) == 6) || (i==3 && t_id(j) <6)
+        if (i==2 && t_id(j) == 6) || (i==3 && t_id(j) <4)
             policy = ones(size(this_meta{t_id(j)}.hit));
         else
             policy = strcmp(this_meta{t_id(j)}.policy,'AB')';
@@ -201,9 +201,9 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 % Re-tracked sessions:
 % 32: 1:3,5:8. 33: 1:3,6. 34: 1:2,4:11. 36: 1:7,9,10. 38: 1:10;
 tracked_sess = zeros(5,13);
-tracked_sess(1,[1:3,5:8]) = 1;
+tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[1,2,4:11]) = 1;
+tracked_sess(3,[5,1,2,6,8:13]) = 1;
 tracked_sess(4,[1:7,9,10]) = 1;
 tracked_sess(5,1:10) = 1;
 
@@ -457,12 +457,12 @@ for i = 1:5
     for j = 1:numel(Threepos{i}.behav)
         clf;
         undropped = find(Threepos{i}.behav{j}.dropped == 0);
-        tid = Threepos{i}.behav{j}.trial_id(undropped)
+        tid = Threepos{i}.behav{j}.trial_id(undropped);
         for t = 1:3;
             tt = find(Threepos{i}.behav{j}.trialtype(undropped) == t);
-            plot(tt,Threepos{i}.meta{j}.pole_location(undropped(tt),1));
+            plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)));
             hold all
-            plot(tt,Threepos{i}.behav{j}.barPos(undropped(tt),1),'k.');
+            plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)),'k.');
             
         end
         title(['Mouse ',Threepos{i}.behav{j}.name(end-2:end-1),' Session ',num2str(j),' (',Threepos{i}.behav{j}.name(1:6),')'])

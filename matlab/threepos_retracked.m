@@ -139,9 +139,9 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 % Re-tracked sessions:
 % 32: 1:3,5:8. 33: 1:3,6. 34: 1:2,4:11. 36: 1:7,9,10. 38: 1:10;
 tracked_sess = zeros(5,13);
-tracked_sess(1,[1:3,5:8]) = 1;
+tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[1,2,4:11]) = 1;
+tracked_sess(3,[5,1,2,6,8:13]) = 1;%tracked_sess(3,[1,2,4:11]) = 1;
 % % Dropping bad sessions
 % tracked_sess(1,[1:3,5:7]) = 1;
 % tracked_sess(2,[2:3,6]) = 1;
@@ -166,8 +166,8 @@ tracked_AB = zeros(5,1);
 
 for i = 1:5;
     load(['~/Dropbox/Data/3posdata/meta_',num2str(a(i)),'.mat']);
-    load(['~/Dropbox/Data/3posdata/behav_',num2str(a(i)),'t.mat']);
-    this_mouse = eval(['behav_',num2str(a(i))]);
+%     load(['~/Dropbox/Data/3posdata/behav_',num2str(a(i)),'t.mat']);
+%     this_mouse = eval(['behav_',num2str(a(i))]);
     % this_touch = touch_38;
     this_meta = eval(['meta_',num2str(a(i))]);
     
@@ -201,9 +201,9 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 % Re-tracked sessions:
 % 32: 1:3,5:8. 33: 1:3,6. 34: 1:2,4:11. 36: 1:7,9,10. 38: 1:10;
 tracked_sess = zeros(5,13);
-tracked_sess(1,[1:3,5:8]) = 1;
+tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[1,2,4:11]) = 1;
+tracked_sess(3,[5,1,2,6,8:13]) = 1;
 tracked_sess(4,[1:7,9,10]) = 1;
 tracked_sess(5,1:10) = 1;
 
