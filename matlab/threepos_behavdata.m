@@ -235,8 +235,8 @@ csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
 sfz = 24414.0625; % 25000 % 
 
-load ~/Dropbox/Data/3posdata/behav_33t.mat
-behav = behav_33;
+load /media/mathew/Data_1/3posdata/behav_34t.mat %~/Dropbox/Data/3posdata/behav_34t.mat
+behav = behav_34;
 
 for i = 1:numel(behav)
     date_str = behav{i}.name; % dir_str(end-20:end-11);
@@ -271,10 +271,10 @@ for i = 1:numel(behav)
     
     licktimes = ceil(1000*licktimes);
     
-    licks_33{i} = licktimes;
+    licks_34{i} = licktimes;
 end
 
-save ~/Dropbox/Data/3posdata/licks_33.mat licks_33
+save ~/Dropbox/Data/3posdata/licks_34.mat licks_34
 
 %% Example: Load raw behaviour data to determine lick times. Sampling rate = 24414.0625Hz
 

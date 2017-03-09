@@ -49,7 +49,7 @@ for i = 1:numel (dates)
 end
 
 % 34
-dates = [27,30,34,25,31,35,54,56,22,26];
+dates = [30,34,27,25,31,35,54,56,22,26];
 for i = 1:numel (dates)
     cd /mnt/NAS1/Dario/Behavioral_movies/34
     files = dir;
@@ -141,7 +141,7 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 tracked_sess = zeros(5,13);
 tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[5,1,2,6,8:13]) = 1;%tracked_sess(3,[1,2,4:11]) = 1;
+tracked_sess(3,[1,2,5,6,8:13]) = 1;%tracked_sess(3,[1,2,4:11]) = 1;
 % % Dropping bad sessions
 % tracked_sess(1,[1:3,5:7]) = 1;
 % tracked_sess(2,[2:3,6]) = 1;
@@ -203,14 +203,14 @@ load ~/Dropbox/Data/3posdata/retrack_db.mat
 tracked_sess = zeros(5,13);
 tracked_sess(1,[1:2,4:8]) = 1;
 tracked_sess(2,[1:3,6]) = 1;
-tracked_sess(3,[5,1,2,6,8:13]) = 1;
+tracked_sess(3,[1,2,5,6,8:13]) = 1;
 tracked_sess(4,[1:7,9,10]) = 1;
 tracked_sess(5,1:10) = 1;
 
 a = [32,33,34,36,38];
 clear ThreePos
 
-for i = 1:5;
+for i = 3%1:5;
     load(['~/Dropbox/Data/3posdata/meta_',num2str(a(i)),'.mat']);
     load(['~/Dropbox/Data/3posdata/licks_',num2str(a(i)),'.mat']);
     
@@ -258,16 +258,29 @@ for i = 1:5;
         trial_id = zeros(numel(tracked_AB),1);
         
         % Touch variables
+        touch_info = load('touch_params.csv');
         tch = zeros(numel(tracked_AB),5000);
         pro_ret_array = zeros(numel(tracked_AB),5000);
         gof_array = zeros(numel(tracked_AB),5000);
         
         first_tch = zeros(numel(tracked_AB),1);
         pro_tch = zeros(numel(tracked_AB),1);
+        pro_tch_csv = -1*ones(numel(tracked_AB),1);
+        tch_det = -1*ones(numel(tracked_AB),1);
                     
         for k = 1: numel(tracked_AB)
             trials(k) = str2double(var_files(tracked_AB(k)).name(end-9:end-4));
             trial_num = find(xls_info(:,1) == trials(k));
+            
+            % Setting up empty single-trial variables incase they are
+            % missing
+            kappa_w = zeros(5000,1);
+            theta_w = zeros(5000,1);
+            r_base = zeros(5000,2,3);
+            touches = zeros(5000,1);
+            protraction_touch = -1; % if missing
+            
+            
             % IF file isn't in good_trials, don't bother loading it
             if trial_num
                 trialtypes(k) = xls_info(trial_num,204);
@@ -323,6 +336,9 @@ for i = 1:5;
                     
                     first_tch(k) = first_touch;
                     pro_tch(k) = protraction_touch;
+                    
+                    pro_tch_csv(k) = touch_info(trial_num,15);
+                    tch_det(k) = touch_info(trial_num,4);
                     
                     
                     fname = [var_files(tracked_AB(k)).name(1:end-4),'.dat'];
@@ -393,6 +409,9 @@ for i = 1:5;
         behav{j}.pro_touch = pro_tch;
         behav{j}.pro_ret = pro_ret_array;
         
+        behav{j}.pro_tch_csv = pro_tch_csv;
+        behav{j}.tch_det = tch_det;
+        
         % Licks
         l = zeros(numel(trial_id),2);
         tid = trial_id(find(trial_id));
@@ -400,7 +419,7 @@ for i = 1:5;
         licks{j} = l;
         
         % Fix choice with lick direction within grace period
-        lick_choice = 3*ones(size(tracked_AB));
+        lick_choice = 3*ones(numel(this_meta{t_id(j)}.pole_location),1);
         lick_choice(find(licks{j}(:,1))) = 1;
         lick_choice(find(licks{j}(:,2))) = 2;
 
@@ -459,7 +478,7 @@ for i = 1:5
         undropped = find(Threepos{i}.behav{j}.dropped == 0);
         tid = Threepos{i}.behav{j}.trial_id(undropped);
         for t = 1:3;
-            tt = find(Threepos{i}.behav{j}.trialtype(undropped) == t);
+            tt = find(Threepos{i}.behav{j}.trialtype(undropped) == t);   
             plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)));
             hold all
             plot(tt,Threepos{i}.meta{j}.pole_location(tid(tt)),'k.');
@@ -472,7 +491,7 @@ for i = 1:5
 end
 
 %% Set bad sync file to dropped = 1
-Threepos{3}.behav{3}.dropped(79:80) = 1;
+Threepos{3}.behav{2}.dropped(79:80) = 1;
 
 %% Additional sync errors should be marked as 'dropped'
 for i = 1:numel(behav_32)
