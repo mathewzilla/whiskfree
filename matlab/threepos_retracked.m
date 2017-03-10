@@ -493,17 +493,4 @@ end
 %% Set bad sync file to dropped = 1
 Threepos{3}.behav{2}.dropped(79:80) = 1;
 
-%% Additional sync errors should be marked as 'dropped'
-for i = 1:numel(behav_32)
-    behav_32{i}.sync = numel(behav_32{i}.trialtype);
-end
 
-% Unsynced exceptions
-behav_32{3}.sync = 119;
-behav_32{5}.sync = 193;
-behav_32{7}.sync = 132;
-behav_32{10}.sync = 130;
-
-
-this_mouse = behav_38;
-this_touch = touch_38;
