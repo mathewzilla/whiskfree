@@ -210,7 +210,7 @@ tracked_sess(5,1:10) = 1;
 a = [32,33,34,36,38];
 clear ThreePos
 
-for i = 3%1:5;
+for i = 1:5;
     load(['~/Dropbox/Data/3posdata/meta_',num2str(a(i)),'.mat']);
     load(['~/Dropbox/Data/3posdata/licks_',num2str(a(i)),'.mat']);
     
@@ -416,15 +416,15 @@ for i = 3%1:5;
         l = zeros(numel(trial_id),2);
         tid = trial_id(find(trial_id));
         l(tid,:) = this_licks{t_id(j)}(tid,:);
-        licks{j} = l;
+        licks{j} = this_licks{t_id(j)};
         
         % Fix choice with lick direction within grace period
         lick_choice = 3*ones(numel(this_meta{t_id(j)}.pole_location),1);
-        lick_choice(find(licks{j}(:,1))) = 1;
-        lick_choice(find(licks{j}(:,2))) = 2;
+        lick_choice(find(l(:,1))) = 1;
+        lick_choice(find(l(:,2))) = 2;
 
         % Fix late licks
-        lick_choice([find(licks{j}(:,1) > 2500);find(licks{j}(:,2) > 2500)]) = 3;
+        lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
         
         behav{j}.choice = lick_choice;
         
@@ -448,7 +448,50 @@ for i = 3%1:5;
     
 end
 
+%% Lick choice array length fix
+for i = 1:5
+    load(['~/Dropbox/Data/3posdata/licks_',num2str(a(i)),'.mat']);
+    
+    this_licks = eval(['licks_',num2str(a(i))]);
+    
+    t_id = find(tracked_sess(i,:));
+    clear licks
+    for j = 1:numel(Threepos{i}.behav)
+        trial_id = Threepos{i}.behav{j}.trial_id;
 
+        tid = trial_id(find(trial_id));
+        l = this_licks{t_id(j)}(tid,:);
+        
+        licks{j} = this_licks{t_id(j)};
+        
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
+        ll = find(l(:,1));
+        lr = find(l(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(l(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+            end
+        
+        end
+        
+        
+        
+        Threepos{i}.behav{j}.choice = lick_choice;
+    end
+    Threepos{i}.licks = licks;
+end
 %% Check sync based on trialtype and pole position
 a = [32,33,34,36,38];
 colours = [0,1,0;1,0,0;0.5,0.5,0.5];
