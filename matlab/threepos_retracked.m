@@ -479,18 +479,18 @@ for i = 1:5
         
         % Fix choice with lick direction within grace period
         lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
-        ll = find(l(:,1));
-        lr = find(l(:,2));
+        ll = find(licks{j}(:,1));
+        lr = find(licks{j}(:,2));
         lick_choice(ll) = 1;
         lick_choice(lr) = 2;
         
         % Fix late licks
-        lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
+        lick_choice([find(licks{j}(:,1) > 2500);find(licks{j}(:,2) > 2500)]) = 3;
         
         % Licking on both ports
         two_licks = ll(find(ismember(ll,lr)));
         for tl = 1:numel(two_licks)
-            [mn,mi] = min(l(two_licks(tl),:));
+            [mn,mi] = min(licks{j}(two_licks(tl),:));
             if mn > 2500
                 lick_choice(two_licks(tl)) = 3;
             else
@@ -548,5 +548,9 @@ end
 
 %% Set bad sync file to dropped = 1
 Threepos{3}.behav{2}.dropped(79:80) = 1;
+
+%% Fixing tracking errors in certain files (do this on original data at some point)
+
+mouse=5, i=1, j=24; Threepos{mouse}.behav{i}.touches(j,1) = 0; Threepos{mouse}.behav{i}.first_touch(j) = 5022;
 
 
