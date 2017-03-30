@@ -215,8 +215,7 @@ for i = 1:5;
     load(['~/Dropbox/Data/3posdata/licks_',num2str(a(i)),'.mat']);
     
     this_meta = eval(['meta_',num2str(a(i))]);
-%     this_licks = eval(['licks_',num2str(a(i))]); % Licking now handled
-%     in a separate loop (in threepos_behavdata.m)
+    this_licks = eval(['licks_',num2str(a(i))]);
     
     t_id = find(tracked_sess(i,:));
     
@@ -231,23 +230,26 @@ for i = 1:5;
             policy = strcmp(this_meta{t_id(j)}.policy,'AB')';
         end
         
-        cd (retrack_db{i,j}.path)
+        
         % Load good_trials file
         xlsfile = 'good_trials.xlsx';
         xls_info = xlsread(xlsfile);
         
         tracked = retrack_db{i,j}.tracked_files;
         
-        % trial_id of tracked files
         tracked_ids = xls_info(tracked,2);
         
-        tracked_AB = tracked(ismember(tracked_ids,find(policy)));
+        tracked_AB = tracked(ismember(tracked,find(policy)));
+        
 
+        
         retrack_table = csvread('quality_touch_params.csv');
         
         var_files = dir('*.dat');
         kappa = zeros(numel(tracked_AB),5000);
         theta = zeros(numel(tracked_AB),5000);
+        
+
         
         trialtypes = zeros(numel(tracked_AB),1);
         trials = zeros(numel(tracked_AB),1);
@@ -415,64 +417,64 @@ for i = 1:5;
         behav{j}.pro_tch_csv = pro_tch_csv;
         behav{j}.tch_det = tch_det;
         
-%         %% Licks - NOW HANDLED SEPARATELY IN THREEPOS_BEHAVDATA.m
-%         l = this_licks{t_id(j)}.licks_all(tid,:);
-%         
-%         licks{j} = this_licks{t_id(j)};
-%         
-%         % Fix choice with lick direction within grace period
-%         lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
-%         ll = find(l(:,1));
-%         lr = find(l(:,2));
-%         lick_choice(ll) = 1;
-%         lick_choice(lr) = 2;
-%         
-%         % Fix late licks
-%         lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
-%         
-%         % Licking on both ports
-%         two_licks = ll(find(ismember(ll,lr)));
-%         for tl = 1:numel(two_licks)
-%             [mn,mi] = min(l(two_licks(tl),:));
-%             if mn > 2500
-%                 lick_choice(two_licks(tl)) = 3;
-%             else
-%                 lick_choice(two_licks(tl)) = mi;
-%             end
-%         
-%         end
-%         
-%         behav{j}.choice = lick_choice;
-%         
-%         %%
-%         
-%         licks{j} = this_licks{t_id(j)};
-%         
-%         % Fix choice with lick direction within grace period
-%         lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
-%         ll = find(licks{j}(:,1));
-%         lr = find(licks{j}(:,2));
-%         lick_choice(ll) = 1;
-%         lick_choice(lr) = 2;
-%         
-%         % Fix late licks
-%         lick_choice([find(licks{j}(:,1) > 2500);find(licks{j}(:,2) > 2500)]) = 3;
-%         
-%         % Licking on both ports
-%         two_licks = ll(find(ismember(ll,lr)));
-%         for tl = 1:numel(two_licks)
-%             [mn,mi] = min(licks{j}(two_licks(tl),:));
-%             if mn > 2500
-%                 lick_choice(two_licks(tl)) = 3;
-%             else
-%                 lick_choice(two_licks(tl)) = mi;
-%             end
-%         
-%         end
-%         
-%         
-%         
-%         behav{j}.choice = lick_choice;
+        %% Licks
+        l = this_licks{t_id(j)}(tid,:);
+        
+        licks{j} = this_licks{t_id(j)};
+        
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
+        ll = find(l(:,1));
+        lr = find(l(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(l(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+            end
+        
+        end
+        
+        behav{j}.choice = lick_choice;
+        
+        %%
+        
+        licks{j} = this_licks{t_id(j)};
+        
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
+        ll = find(licks{j}(:,1));
+        lr = find(licks{j}(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        lick_choice([find(licks{j}(:,1) > 2500);find(licks{j}(:,2) > 2500)]) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(licks{j}(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+            end
+        
+        end
+        
+        
+        
+        behav{j}.choice = lick_choice;
         
         %% Meta
         meta{j} = this_meta{t_id(j)};
@@ -489,13 +491,12 @@ for i = 1:5;
     end
     
     Threepos{i}.behav = behav;
-%     Threepos{i}.licks = licks;
+    Threepos{i}.licks = licks;
     Threepos{i}.meta = meta;
     
 end
 
-save ~/Dropbox/Data/3posdata/Threepos Threepos
-%% Lick choice array length fix - NOW DONE IN THREEPOS_BEHAVDATA.m
+%% Lick choice array length fix
 for i = 1:5
     load(['~/Dropbox/Data/3posdata/licks_',num2str(a(i)),'.mat']);
     
