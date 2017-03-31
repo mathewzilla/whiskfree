@@ -485,9 +485,9 @@ for i = 1:5
 
     for j = 1:numel(this_licks)
         trial_id = Threepos{i}.behav{j}.trial_id;
-
+% 
         tid = trial_id(find(trial_id));
-        l = this_licks{j}.licks_all(tid,:);
+        l = this_licks{j}.licks_all;%(tid,:);
         
    
         
@@ -499,7 +499,8 @@ for i = 1:5
         lick_choice(lr) = 2;
         
         % Fix late licks
-        lick_choice([find(l(:,1) > 2500);find(l(:,2) > 2500)]) = 3;
+        late_lick = [find(l(:,1) > 2500);find(l(:,2) > 2500)];
+        lick_choice(late_lick) = 3;
         
         % Licking on both ports
         two_licks = ll(find(ismember(ll,lr)));
@@ -515,13 +516,13 @@ for i = 1:5
                 if l(two_licks(tl),1) == l(two_licks(tl),2)
                     display(['Simultaneous licks in trial i:',num2str(i),' j:',num2str(j),' t:',num2str(two_licks(tl))])
                     display(['Licks: ',num2str(l(two_licks(tl),:))])
-                    display(['Licks (24kHz): ',num2str(Threepos{i}.licks{j}.licks_sf(tid(two_licks(tl)),:))])
-                    display(['Trialtype: ',num2str(Threepos{i}.behav{j}.trialtype(two_licks(tl))),' Choice: ',num2str(Threepos{i}.behav{j}.choice_m(two_licks(tl)))])
-                    display(['Valves open: ',num2str(this_licks{j}.valve(tid(two_licks(tl)),:))]);
+                    display(['Licks (24kHz): ',num2str(Threepos{i}.licks{j}.licks_sf(two_licks(tl),:))])
+                    display(['Trialtype: ',num2str(Threepos{i}.meta{j}.trialtype(two_licks(tl))),' Choice: ',num2str(Threepos{i}.meta{j}.response(two_licks(tl)))])
+                    display(['Valves open: ',num2str(this_licks{j}.valve(two_licks(tl),:))]);
                     display(' ')
                     pause;
 %                     [mn,mi] = min(Threepos{i}.licks{j}.licks_sf(tid(two_licks(tl)),:));
-                    lick_choice(two_licks(tl)) = Threepos{i}.behav{j}.choice_m(two_licks(tl));
+                    lick_choice(two_licks(tl)) = Threepos{i}.meta{j}.response(two_licks(tl));
                 end
             end
         end
@@ -529,5 +530,7 @@ for i = 1:5
         
         
         Threepos{i}.behav{j}.choice = lick_choice;
+        Threepos{i}.licks{j}.late_lick = zeros(size(lick_choice));
+        Threepos{i}.licks{j}.late_lick(late_lick) = 1;
     end
 end
