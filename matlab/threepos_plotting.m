@@ -537,15 +537,15 @@ for mouse = 1:5; % Add special case 6 for concatenating all data
     
     figure(4);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_theta_touch_hist'])
-    figure(5);
+    figure(7);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_theta_touch_cumsum'])
     
-    figure(6);
+    figure(5);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_first_touch_latency_hist'])
-    figure(7);
+    figure(8);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_first_touch_latency_cumsum'])
     
-    figure(8);
+    figure(6);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_delta_kappa_hist'])
     figure(9);
     print('-dpng',['~/Dropbox/behavioral_project/SfN_style_figs/M_',num2str(a(mouse)),'_2_choice_delta_kappa_cumsum'])
