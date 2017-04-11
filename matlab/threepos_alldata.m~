@@ -1,0 +1,59 @@
+% threepos_alldata.m
+% A script to load all behaviour data for a given mouse into a single
+% structure
+
+
+
+month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+sfz = 24414.0625; % 25000 %
+
+% First look at 2014
+all_data = {};
+mouse_num = {'32','33','34','36','38'};
+for a = 1:5;
+    n = 0;
+    for m = 1:12;
+        
+        cd(['/mnt/isilon/fls/Dario Campagner/behavior_test_rsp/'])
+        
+        dirnames = dir(['*',month_names{m},'-2014']);
+        for d = 1:numel(dirnames)
+            
+            date_str = dirnames(d).name;
+            cd(['/mnt/isilon/fls/Dario Campagner/behavior_test_rsp/',date_str])
+            clear mouse_data
+            
+            mouse_data = dir([mouse_num{a},'*']);
+            if numel(mouse_data)>0
+                display(['Mouse ',mouse_num{a},' data on ',date_str])
+                
+                for s = 1:numel(mouse_data)
+
+                    cd(['/mnt/isilon/fls/Dario Campagner/behavior_test_rsp/',date_str,'/',mouse_data(s).name])
+                    
+                    numtrials = numel(dir) - 3;
+                    if numtrials>=1
+                    n = n+1;
+                    
+                    load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
+                    all_data{a}.
+                    % Parse date string 
+                        mouse = mouse_data(s).name;
+                        d = date_str(1:2);
+                        y = date_str(10:11);
+                        m = date_str(4:6);
+                    
+                  
+                   
+                    
+                    % Lick data 
+                    for k = 1:numtrials
+                    this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(k),'.mat']);
+                    
+                    
+                    end
+                
+            end
+        end
+    end
+end

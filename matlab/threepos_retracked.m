@@ -592,5 +592,9 @@ Threepos{4}.behav{6}.dropped(65)    = 1;
 Threepos{4}.behav{6}.dropped(1) =1;
 Threepos{4}.behav{6}.dropped(13) =1;
 
-
+%% More trials with bad tracking
+Threepos{1}.behav{3}.dropped(4) = 1;
+Threepos{3}.behav{1}.dropped(131) = 1;
+Threepos{3}.behav{3}.dropped(33) = 1;
+Threepos{4}.behav{4}.dropped(70) = 1;
 
