@@ -534,3 +534,62 @@ for i = 1:5
         Threepos{i}.licks{j}.late_lick(late_lick) = 1;
     end
 end
+
+%% all_data version of above
+clear all 
+load ~/Dropbox/behavioral_project/all_data.mat
+for i = 1:5
+    
+    this_licks = all_data{i}.licks;
+
+    for j = 1:numel(this_licks)
+        try
+        l = this_licks{j}.licks_all;%(tid,:);
+
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(all_data{i}.meta{j}.pole_location),1);
+        ll = find(l(:,1));
+        lr = find(l(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        late_lick = [find(l(:,1) > 2500);find(l(:,2) > 2500)];
+        lick_choice(late_lick) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(l(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+                
+            
+            
+                if l(two_licks(tl),1) == l(two_licks(tl),2)
+                    display(['Simultaneous licks in trial i:',num2str(i),' j:',num2str(j),' t:',num2str(two_licks(tl))])
+                    display(['Licks: ',num2str(l(two_licks(tl),:))])
+                    display(['Licks (24kHz): ',num2str(this_licks{j}.licks_sf(two_licks(tl),:))])
+                    display(['Trialtype: ',num2str(all_data{i}.meta{j}.pole_location(two_licks(tl))),' Choice: ',num2str(all_data{i}.meta{j}.response(two_licks(tl)))])
+                    display(['Valves open: ',num2str(this_licks{j}.valve(two_licks(tl),:))]);
+                    display(' ')
+%                     pause;
+%                     [mn,mi] = min(Threepos{i}.licks{j}.licks_sf(tid(two_licks(tl)),:));
+                    lick_choice(two_licks(tl)) = all_data{i}.meta{j}.response(two_licks(tl));
+                end
+            end
+        end
+        
+        
+        
+        all_data{i}.meta{j}.choice = lick_choice;
+        all_data{i}.licks{j}.late_lick = zeros(size(lick_choice));
+        all_data{i}.licks{j}.late_lick(late_lick) = 1;
+        catch
+            display(['Missing data in trial i:',num2str(i),' j:',num2str(j)]);
+        end
+    end
+end
+
