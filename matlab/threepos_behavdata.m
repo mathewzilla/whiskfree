@@ -561,7 +561,7 @@ for i = 1:5
         two_licks = ll(find(ismember(ll,lr)));
         for tl = 1:numel(two_licks)
             [mn,mi] = min(l(two_licks(tl),:));
-            if mn > 2500
+            if mn > all_data{i}.meta{j}.resp(two_licks(tl),2);% 2500
                 lick_choice(two_licks(tl)) = 3;
             else
                 lick_choice(two_licks(tl)) = mi;
