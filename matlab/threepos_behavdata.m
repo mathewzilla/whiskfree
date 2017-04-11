@@ -1,6 +1,6 @@
 % threepos_behavdata.m
 % Script to load behaviour data matlab files for the relevant sessions in
-% the 3 position task corpus. 
+% the 3 position task corpus.
 % Save this data in a behav_.. style array that matches the data array
 
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
@@ -8,7 +8,7 @@ month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov'
 %% 32
 % Load data structure
 load ~/Dropbox/Data/3posdata/behav_32b.mat
-% Use behav_32{i}.name to work out which data file to load 
+% Use behav_32{i}.name to work out which data file to load
 for i = 1:numel(behav_32);
     date_str = behav_32{i}.name; % dir_str(end-20:end-11);
     display(['Processing session ',date_str])
@@ -26,7 +26,7 @@ for i = 1:numel(behav_32);
     trial_id = 1:numel(behav_32{i}.trial);
     % Load resynced trial_id for 7 ,10, 11
     if (i==7 || i==10 || i==11)
-    load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/resync_trials_',date_str])
+        load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/resync_trials_',date_str])
     end
     % resync? i = 7,10,11
     session_data.trial_id = trial_id;
@@ -57,7 +57,7 @@ for i = 1:numel(behav_33);
     % Behaviour files are formatted like behaviour_38a_16-Jul-2015_session_data.mat
     load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
     meta_33{i} = session_data;
-
+    
 end
 
 save ~/work/whiskfree/data/meta_33.mat meta_33
@@ -83,7 +83,7 @@ for i = 1:numel(behav_34);
     % Behaviour files are formatted like behaviour_38a_16-Jul-2015_session_data.mat
     load(['/run/user/1000/gvfs/smb-share:server=130.88.94.172,share=test/Dario/Behavioral_movies/BehavStat/behaviour_',mouse,'_',d,'-',m,'-20',y,'_session_data.mat'])
     meta_34{i} = session_data;
-
+    
 end
 
 save ~/work/whiskfree/data/meta_34.mat meta_34
@@ -143,7 +143,7 @@ for i = 1:numel(behav_36);
     
     session_data.trial_id = trial_id;
     meta_36{i} = session_data;
-
+    
 end
 
 save ~/work/whiskfree/data/meta_36.mat meta_36
@@ -171,7 +171,7 @@ for i = 1:numel(behav_38);
     
     session_data.trial_id = trial_id;
     meta_38{i} = session_data;
-
+    
 end
 
 save ~/work/whiskfree/data/meta_38.mat meta_38
@@ -233,7 +233,7 @@ csvwrite(['~/work/whiskfree/data/AB_',this_mouse{s}.name(end-2:end-1),'_r.csv'],
 % DONE: 36, 32, 34
 
 month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
-sfz = 24414.0625; % 25000 % 
+sfz = 24414.0625; % 25000 %
 
 load /media/mathew/Data_1/3posdata/behav_34t.mat %~/Dropbox/Data/3posdata/behav_34t.mat
 behav = behav_34;
@@ -248,12 +248,12 @@ for i = 1:numel(behav)
     
     % Determine month name
     m = month_names{m_num};
-
-%     filestring = ['/run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk,share=flsrss$/snapped/replicated/Petersen/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
+    
+    %     filestring = ['/run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk,share=flsrss$/snapped/replicated/Petersen/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
     filestring = ['/mnt/isilon/fls/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
-   
+    
     cd (filestring);
-
+    
     numtrials = numel(dir) - 3; % All files apart from ., .., and _session_data
     
     licktimes = zeros(numtrials,2);
@@ -278,7 +278,7 @@ save ~/Dropbox/Data/3posdata/licks_34.mat licks_34
 
 %% Example: Load raw behaviour data to determine lick times. Sampling rate = 24414.0625Hz
 
-sfz = 24414.0625; % 25000 % 
+sfz = 24414.0625; % 25000 %
 
 for j = 181:210 %25:numtrials
     this_data = load([filestring,'behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(j),'.mat']);
@@ -306,7 +306,7 @@ for j = 181:210 %25:numtrials
     legend('lickvalveleft','lickvalveright')
     ax(4) = subplot(2,2,4);
     plot(xrange,this_data.read.resp); hold all;
-    plot(xrange,this_data.read.airpuffvalve); 
+    plot(xrange,this_data.read.airpuffvalve);
     plot(xrange,this_data.read.drink);
     plot(xrange,this_data.read.timeout);
     title([num2str(find(this_data.read.resp,1,'first')/sfz),', ',num2str(find(this_data.read.drink,1,'first')/sfz),', ',num2str(find(this_data.read.timeout,1,'first')/sfz)])
@@ -362,4 +362,234 @@ lick_choice(find(l{i}(:,2))) = 2;
 % Fix late licks
 lick_choice([find(l{i}(:,1) > 2500);find(l{i}(:,2) > 2500)]) = 3;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHANGING THREEPOS LICKING DATA 03.17.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Loop to load and save more licking information, for the sessions in Threepos (threepos_retracked.m)
+load ~/Dropbox/Data/3posdata/Threepos.mat
+
+month_names = {'Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'};
+sfz = 24414.0625;
+plotting = 0;
+a = [32,33,34,36,38];
+for i = 1:5
+    clear licks
+    for j = 1:numel(Threepos{i}.behav)
+        
+        date_str = Threepos{i}.behav{j}.name; % dir_str(end-20:end-11);
+        display(['Processing session ',date_str])
+        mouse = date_str(8:10);
+        d = date_str(1:2);
+        y = date_str(5:6);
+        m_num = str2num(date_str(3:4));
+        
+        % Determine month name
+        m = month_names{m_num};
+        
+        %     filestring = ['/run/user/1000/gvfs/smb-share:server=nasr.man.ac.uk,share=flsrss$/snapped/replicated/Petersen/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
+        filestring = ['/mnt/isilon/fls/Dario Campagner/behavior_test_rsp/',d,'-',m,'-20',y,'/',mouse,'/'];
+        
+        cd (filestring);
+        
+        numtrials = numel(dir) - 3; % All files apart from ., .., and _session_data
+        
+        licktimes = zeros(numtrials,2);
+        licktimes_sf = zeros(numtrials,2);
+        valvetimes = zeros(numtrials,2);
+        timeout = zeros(numtrials,1);
+        for k = 1:numtrials
+            this_data = load(['behaviour_',mouse,'_',d,'-',m,'-20',y,'_',num2str(k),'.mat']);
+            %%
+            if plotting
+                clf;
+                xrange = [1:200000]/sfz;
+                
+                ax(1) = subplot(4,1,1);
+                plot(xrange,this_data.read.piezoleft); hold all
+                plot(xrange,this_data.read.piezoright);
+                xlim([0,5])
+                legend('piezoleft','piezoright')
+                ax(2) = subplot(4,1,2);
+                plot(xrange,this_data.read.lickleft); hold all
+                plot(xrange,this_data.read.lickright)
+                title([num2str(find(this_data.read.lickleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickright,1,'first')/sfz)])
+                xlim([0,5])
+                legend('lickleft','lickright')
+                ax(3) = subplot(4,1,3);
+                plot(xrange,this_data.read.lickvalveleft); hold all
+                plot(xrange,this_data.read.lickvalveright);
+                title([num2str(find(this_data.read.lickvalveleft,1,'first')/sfz),', ',num2str(find(this_data.read.lickvalveright,1,'first')/sfz)])
+                xlim([0,5])
+                legend('lickvalveleft','lickvalveright')
+                ax(4) = subplot(4,1,4);
+                plot(xrange,this_data.read.resp); hold all;
+                plot(xrange,this_data.read.airpuffvalve);
+                plot(xrange,this_data.read.drink);
+                plot(xrange,this_data.read.timeout);
+                title([num2str(find(this_data.read.resp,1,'first')/sfz),', ',num2str(find(this_data.read.drink,1,'first')/sfz),', ',num2str(find(this_data.read.timeout,1,'first')/sfz)])
+                xlim([0,5])
+                legend('resp','airpuffvalve','drink','timeout')
+                
+                suptitle(['Trial ',num2str(j),' trialtype ',num2str(this_data.read.trialtype)])
+                drawnow;
+                linkaxes(ax,'x')
+                pause
+            end
+            %%
+            ll = find(this_data.read.lickleft,1,'first');
+            lr = find(this_data.read.lickright,1,'first');
+            vl = find(this_data.read.lickvalveleft,1,'first');
+            vr = find(this_data.read.lickvalveright,1,'first');
+            to = find(this_data.read.timeout,1,'first');
+            
+            if ll
+                licktimes(k,1) =  ll/sfz;
+                licktimes_sf(k,1) =  ll;
+            end
+            if lr
+                licktimes(k,2) =  lr/sfz;
+                licktimes_sf(k,2) =  lr;
+            end
+            
+            if vl
+                valvetimes(k,1) =  vl/sfz;
+            end
+            if vr
+                valvetimes(k,2) =  vr/sfz;
+            end
+            if to 
+                timeout(k) = to/sfz;
+            end
+
+            
+        end
+        
+        licktimes = ceil(1000*licktimes);
+
+        licks{j}.licks_all = licktimes;
+        licks{j}.licks_sf = licktimes_sf;
+        licks{j}.valve = valvetimes;
+        licks{j}.timeout = timeout;
+    end
+    Threepos{i}.licks = licks;
+end
+
+save ~/Dropbox/Data/3posdata/Threepos Threepos
+
+%% Set Threepos.behav.choice variable by lick direction and resolve simultaneous licking (either by high-sampling-rate lick time or reward delivery)
+
+for i = 1:5
+    
+    this_licks = Threepos{i}.licks;
+
+    for j = 1:numel(this_licks)
+        trial_id = Threepos{i}.behav{j}.trial_id;
+% 
+        tid = trial_id(find(trial_id));
+        l = this_licks{j}.licks_all;%(tid,:);
+        
+   
+        
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(Threepos{i}.meta{j}.pole_location),1);
+        ll = find(l(:,1));
+        lr = find(l(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        late_lick = [find(l(:,1) > 2500);find(l(:,2) > 2500)];
+        lick_choice(late_lick) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(l(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+                
+            
+            
+                if l(two_licks(tl),1) == l(two_licks(tl),2)
+                    display(['Simultaneous licks in trial i:',num2str(i),' j:',num2str(j),' t:',num2str(two_licks(tl))])
+                    display(['Licks: ',num2str(l(two_licks(tl),:))])
+                    display(['Licks (24kHz): ',num2str(Threepos{i}.licks{j}.licks_sf(two_licks(tl),:))])
+                    display(['Trialtype: ',num2str(Threepos{i}.meta{j}.trialtype(two_licks(tl))),' Choice: ',num2str(Threepos{i}.meta{j}.response(two_licks(tl)))])
+                    display(['Valves open: ',num2str(this_licks{j}.valve(two_licks(tl),:))]);
+                    display(' ')
+                    pause;
+%                     [mn,mi] = min(Threepos{i}.licks{j}.licks_sf(tid(two_licks(tl)),:));
+                    lick_choice(two_licks(tl)) = Threepos{i}.meta{j}.response(two_licks(tl));
+                end
+            end
+        end
+        
+        
+        
+        Threepos{i}.behav{j}.choice = lick_choice;
+        Threepos{i}.licks{j}.late_lick = zeros(size(lick_choice));
+        Threepos{i}.licks{j}.late_lick(late_lick) = 1;
+    end
+end
+
+%% all_data version of above
+clear all 
+load ~/Dropbox/behavioral_project/all_data.mat
+for i = 1:5
+    
+    this_licks = all_data{i}.licks;
+
+    for j = 1:numel(this_licks)
+        try
+        l = this_licks{j}.licks_all;%(tid,:);
+
+        % Fix choice with lick direction within grace period
+        lick_choice = 3*ones(numel(all_data{i}.meta{j}.pole_location),1);
+        ll = find(l(:,1));
+        lr = find(l(:,2));
+        lick_choice(ll) = 1;
+        lick_choice(lr) = 2;
+        
+        % Fix late licks
+        late_lick = [find(l(:,1) > 2500);find(l(:,2) > 2500)];
+        lick_choice(late_lick) = 3;
+        
+        % Licking on both ports
+        two_licks = ll(find(ismember(ll,lr)));
+        for tl = 1:numel(two_licks)
+            [mn,mi] = min(l(two_licks(tl),:));
+            if mn > 2500
+                lick_choice(two_licks(tl)) = 3;
+            else
+                lick_choice(two_licks(tl)) = mi;
+                
+            
+            
+                if l(two_licks(tl),1) == l(two_licks(tl),2)
+                    display(['Simultaneous licks in trial i:',num2str(i),' j:',num2str(j),' t:',num2str(two_licks(tl))])
+                    display(['Licks: ',num2str(l(two_licks(tl),:))])
+                    display(['Licks (24kHz): ',num2str(this_licks{j}.licks_sf(two_licks(tl),:))])
+                    display(['Trialtype: ',num2str(all_data{i}.meta{j}.pole_location(two_licks(tl))),' Choice: ',num2str(all_data{i}.meta{j}.response(two_licks(tl)))])
+                    display(['Valves open: ',num2str(this_licks{j}.valve(two_licks(tl),:))]);
+                    display(' ')
+%                     pause;
+%                     [mn,mi] = min(Threepos{i}.licks{j}.licks_sf(tid(two_licks(tl)),:));
+                    lick_choice(two_licks(tl)) = all_data{i}.meta{j}.response(two_licks(tl));
+                end
+            end
+        end
+        
+        
+        
+        all_data{i}.meta{j}.choice = lick_choice;
+        all_data{i}.licks{j}.late_lick = zeros(size(lick_choice));
+        all_data{i}.licks{j}.late_lick(late_lick) = 1;
+        catch
+            display(['Missing data in trial i:',num2str(i),' j:',num2str(j)]);
+        end
+    end
+end
 
